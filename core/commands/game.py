@@ -4,7 +4,7 @@ from wpilib import RobotBase
 from lib import logger, utils
 from lib.classes import TargetAlignmentMode, ControllerRumbleMode, ControllerRumblePattern
 if TYPE_CHECKING: from core.robot import RobotCore
-from core.classes import Position, TargetAlignmentLocation, TargetPositionType
+from core.classes import TargetAlignmentLocation, TargetPositionType
 import core.constants as constants
 
 class Game:
@@ -19,10 +19,6 @@ class Game:
       self._robot.localization.getRobotPose, 
       lambda: self._robot.localization.getTargetPose(targetAlignmentLocation, self._robot.elevator.isAtReefCoralL4Position()),
       targetAlignmentMode
-    ).until(
-      lambda: self.isRobotAlignedToTarget()
-    ).withTimeout(
-      constants.Game.Commands.kTargetAlignmentTimeout
     ).andThen(
       self.rumbleControllers(ControllerRumbleMode.Driver)
     ).withName(f'Game:AlignRobotToTarget:{ targetAlignmentMode.name }:{ targetAlignmentLocation.name }')
@@ -112,7 +108,7 @@ class Game:
     ).finallyDo(
       lambda end: self._robot.elevator.setUpperStageSoftLimitsEnabled(True)
     )
-    
+
   def intakeCoral(self) -> Command:
     return cmd.sequence(
       cmd.parallel(

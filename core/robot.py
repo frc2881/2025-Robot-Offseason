@@ -34,7 +34,6 @@ class RobotCore:
   def _initSensors(self) -> None:
     self.gyro = Gyro_NAVX2(constants.Sensors.Gyro.NAVX2.kComType)
     self.poseSensors = tuple(PoseSensor(c) for c in constants.Sensors.Pose.kPoseSensorConfigs) 
-    # self.gripperSensor = DistanceSensor(constants.Sensors.Distance.Gripper.kConfig
     self.gripperSensor = BeamBreakSensor("Gripper", constants.Sensors.BeamBreak.Gripper.kChannel) 
     self.intakeSensor = BeamBreakSensor("Intake", constants.Sensors.BeamBreak.Intake.kChannel) 
     SmartDashboard.putString("Robot/Sensors/Camera/Streams", utils.toJson(constants.Sensors.Camera.kStreams))
