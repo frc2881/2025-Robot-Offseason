@@ -88,14 +88,14 @@ class Subsystems:
     )
 
     kTargetAlignmentConstants = TargetAlignmentConstants(
+      translationPID = PID(5.0, 0, 0),
+      translationTolerance = Tolerance(0.025, 0.05),
+      translationSpeedMax = kTranslationSpeedMax * 0.25,
       rotationPID = PID(0.1, 0, 0),
       rotationTolerance = Tolerance(0.25, 0.5),
       rotationSpeedMax = kRotationSpeedMax * 0.25, 
       rotationHeadingModeOffset = 0.0,
-      rotationTranslationModeOffset = 180,
-      translationPID = PID(5.0, 0, 0),
-      translationTolerance = Tolerance(0.025, 0.05),
-      translationSpeedMax = kTranslationSpeedMax * 0.25
+      rotationTranslationModeOffset = 180
     )
 
   class Elevator:
