@@ -223,9 +223,6 @@ class Drive(Subsystem):
     if self._targetAlignmentState != State.Completed:
       self._targetAlignmentState = State.Stopped
 
-  def isAligningToTarget(self) -> bool:
-    return self._targetAlignmentState == State.Running
-
   def isAlignedToTarget(self) -> bool:
     return self._targetAlignmentState == State.Completed
   
@@ -239,5 +236,6 @@ class Drive(Subsystem):
   
   def _updateTelemetry(self) -> None:
     SmartDashboard.putBoolean("Robot/Drive/IsAlignedToTarget", self.isAlignedToTarget())
+    SmartDashboard.putString("Robot/Drive/TargetAlignmentState", self._targetAlignmentState.name)
     SmartDashboard.putString("Robot/Drive/LockPosition", self._lockPosition.name)
     self._swerveModuleStatesPublisher.set(self._getSwerveModuleStates())

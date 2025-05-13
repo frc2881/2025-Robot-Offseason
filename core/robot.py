@@ -4,7 +4,7 @@ from lib import logger, utils
 from lib.classes import TargetAlignmentMode
 from lib.controllers.xbox import Xbox
 from lib.sensors.distance import DistanceSensor
-from lib.sensors.beambreak import BeamBreakSensor
+from lib.sensors.binary import BinarySensor
 from lib.sensors.gyro_navx2 import Gyro_NAVX2
 from lib.sensors.pose import PoseSensor
 from core.commands.auto import Auto
@@ -33,11 +33,11 @@ class RobotCore:
 
   def _initSensors(self) -> None:
     self.gyro = Gyro_NAVX2(constants.Sensors.Gyro.NAVX2.kComType)
-    self.poseSensors = tuple(PoseSensor(c) for c in constants.Sensors.Pose.kPoseSensorConfigs) 
-    self.gripperSensor = BeamBreakSensor("Gripper", constants.Sensors.BeamBreak.Gripper.kChannel) 
-    self.intakeSensor = BeamBreakSensor("Intake", constants.Sensors.BeamBreak.Intake.kChannel) 
+    self.poseSensors = tuple(PoseSensor(c) for c in constants.Sensors.Pose.kPoseSensorConfigs)
     SmartDashboard.putString("Robot/Sensors/Camera/Streams", utils.toJson(constants.Sensors.Camera.kStreams))
-
+    self.gripperSensor = BinarySensor("Gripper", constants.Sensors.Binary.Gripper.kChannel) 
+    self.intakeSensor = BinarySensor("Intake", constants.Sensors.Binary.Intake.kChannel) 
+    
   def _initSubsystems(self) -> None:
     self.drive = Drive(self.gyro.getHeading)
     self.elevator = Elevator()
@@ -50,8 +50,7 @@ class RobotCore:
     self.localization = Localization(
       self.gyro.getRotation, 
       self.drive.getModulePositions, 
-      self.poseSensors, 
-      self.drive.isAligningToTarget
+      self.poseSensors
     )
 
   def _initControllers(self) -> None:

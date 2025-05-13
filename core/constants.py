@@ -38,7 +38,8 @@ from core.classes import (
   ElevatorPosition
 )
 
-APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout(f'{ wpilib.getDeployDirectory() }/localization/2025-reefscape-welded-filtered.json')
+APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout(f'{ wpilib.getDeployDirectory() }/localization/2025-reefscape-andymark-filtered.json')
+# TODO: update PhotonVision instances on coprocessors to use AndyMark layout JSON
 PATHPLANNER_ROBOT_CONFIG = RobotConfig.fromGUISettings()
 
 class Subsystems:
@@ -88,12 +89,12 @@ class Subsystems:
 
     kTargetAlignmentConstants = TargetAlignmentConstants(
       translationPID = PID(5.0, 0, 0),
-      translationTolerance = Tolerance(0.025, 0.05),
+      translationTolerance = Tolerance(0.05, 0.1),
       translationSpeedMax = kTranslationSpeedMax * 0.3,
-      rotationPID = PID(0.1, 0, 0),
+      rotationPID = PID(0.1, 0, 0), # TODO: recalibrate P for target alignment rotation on comp robot
       rotationTolerance = Tolerance(0.25, 0.5),
       rotationSpeedMax = kRotationSpeedMax * 0.3, 
-      rotationHeadingModeOffset = 0.0,
+      rotationHeadingModeOffset = 0,
       rotationTranslationModeOffset = 180.0
     )
 
@@ -195,13 +196,13 @@ class Subsystems:
       motorMotionVelocityFF = 1.0 / 6784,
       motorMotionAllowedClosedLoopError = 0.25,
       motorSoftLimitForward = 12.0,
-      motorSoftLimitReverse = 0.0,
+      motorSoftLimitReverse = 0,
       motorResetSpeed = 0.2
     ))
 
-    kInPosition: float = 0.0
+    kInPosition: float = 0
     kOutPosition: float = 12.0
-    kHandoffPosition: float = 0.0
+    kHandoffPosition: float = 0
     kEjectPosition: float = 2.6
     kHoldSpeed: float = -0.05
     kInputLimit: units.percent = 0.3
@@ -220,17 +221,14 @@ class Services:
     kVisionStandardDeviations: tuple[float, float, float] = (0.4, 0.4, units.degreesToRadians(4))
     kVisionMaxTargetDistance: units.meters = 4.0
     kVisionMaxPoseAmbiguity: units.percent = 0.2
+    kRobotPoseMaxGroundPlaneDelta: units.meters = 0.25
 
 class Sensors: 
   class Gyro:
     class NAVX2:
       kComType = AHRS.NavXComType.kUSB1
-
-  class Distance:
-    class Gripper:
-      kConfig = DistanceSensorConfig("Gripper", 1, 60)
   
-  class BeamBreak:
+  class Binary:
     class Intake:
       kChannel = 9
 
@@ -327,15 +325,15 @@ class Game:
       kTargetAlignmentTransforms: dict[TargetType, dict[TargetAlignmentLocation, Transform3d]] = {
         TargetType.Reef: {
           TargetAlignmentLocation.Center: Transform3d(units.inchesToMeters(36), 0, 0, Rotation3d()),
-          TargetAlignmentLocation.Left: Transform3d(units.inchesToMeters(22.0), units.inchesToMeters(-6.5), 0, Rotation3d(Rotation2d.fromDegrees(0.0))),
-          TargetAlignmentLocation.Right: Transform3d(units.inchesToMeters(22.0), units.inchesToMeters(6.5), 0, Rotation3d(Rotation2d.fromDegrees(0.0))),
-          TargetAlignmentLocation.LeftL4: Transform3d(units.inchesToMeters(23.0), units.inchesToMeters(-6.5), 0, Rotation3d(Rotation2d.fromDegrees(0.0))),
-          TargetAlignmentLocation.RightL4: Transform3d(units.inchesToMeters(23.0), units.inchesToMeters(6.5), 0, Rotation3d(Rotation2d.fromDegrees(0.0))) 
+          TargetAlignmentLocation.Left: Transform3d(units.inchesToMeters(22.0), units.inchesToMeters(-6.5), 0, Rotation3d(Rotation2d.fromDegrees(0))),
+          TargetAlignmentLocation.Right: Transform3d(units.inchesToMeters(22.0), units.inchesToMeters(6.5), 0, Rotation3d(Rotation2d.fromDegrees(0))),
+          TargetAlignmentLocation.LeftL4: Transform3d(units.inchesToMeters(23.0), units.inchesToMeters(-6.5), 0, Rotation3d(Rotation2d.fromDegrees(0))),
+          TargetAlignmentLocation.RightL4: Transform3d(units.inchesToMeters(23.0), units.inchesToMeters(6.5), 0, Rotation3d(Rotation2d.fromDegrees(0))) 
         },
         TargetType.CoralStation: {
-          TargetAlignmentLocation.Center: Transform3d(units.inchesToMeters(20.0), units.inchesToMeters(0.0), 0, Rotation3d()),
-          TargetAlignmentLocation.Left: Transform3d(units.inchesToMeters(20.0), units.inchesToMeters(-24.0), 0, Rotation3d()),
-          TargetAlignmentLocation.Right: Transform3d(units.inchesToMeters(20.0), units.inchesToMeters(24.0), 0, Rotation3d())
+          TargetAlignmentLocation.Center: Transform3d(units.inchesToMeters(20.0), units.inchesToMeters(0.0), 0, Rotation3d(Rotation2d.fromDegrees(0))),
+          TargetAlignmentLocation.Left: Transform3d(units.inchesToMeters(20.0), units.inchesToMeters(-24.0), 0, Rotation3d(Rotation2d.fromDegrees(0))),
+          TargetAlignmentLocation.Right: Transform3d(units.inchesToMeters(20.0), units.inchesToMeters(24.0), 0, Rotation3d(Rotation2d.fromDegrees(0)))
         }
       }                                                                                                                                           
 
