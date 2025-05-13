@@ -217,8 +217,6 @@ class Subsystems:
 
 class Services:
   class Localization:
-    kStateStandardDeviations: tuple[float, float, float] = (0.04, 0.04, units.degreesToRadians(1))
-    kVisionStandardDeviations: tuple[float, float, float] = (0.4, 0.4, units.degreesToRadians(4))
     kVisionMaxTargetDistance: units.meters = 4.0
     kVisionMaxPoseAmbiguity: units.percent = 0.2
     kRobotPoseMaxGroundPlaneDelta: units.meters = 0.25
