@@ -93,7 +93,7 @@ class Subsystems:
       translationSpeedMax = kTranslationSpeedMax * 0.3,
       rotationPID = PID(0.1, 0, 0), # TODO: recalibrate P for target alignment rotation on comp robot
       rotationTolerance = Tolerance(0.25, 0.5),
-      rotationSpeedMax = kRotationSpeedMax * 0.3, 
+      rotationSpeedMax = kRotationSpeedMax * 0.5, 
       rotationHeadingModeOffset = 0,
       rotationTranslationModeOffset = 180.0
     )
@@ -161,7 +161,6 @@ class Subsystems:
     ))
 
     kCoralStationSafePosition: units.inches = 30.0
-    kReefCoralL1Position: units.inches = 10.0
     kInputLimit: units.percent = 0.6
 
   class Wrist:
@@ -179,7 +178,6 @@ class Subsystems:
     kGripperMotorIntakeSpeed: units.percent = 0.8
     kGripperMotorHoldSpeed: units.percent = 0.05
     kGripperMotorReleaseSpeed: units.percent = 1.0
-    kGripperMotorReleaseSpeedLow: units.percent = 0.3
     kGripperReleaseTimeout: units.seconds = 0.5
 
   class Intake:
@@ -288,7 +286,7 @@ class Controllers:
 
 class Game:
   class Commands:
-    pass
+    kAutoTargetAlignmentTimeout: units.seconds = 3.0
 
   class Field:
     kAprilTagFieldLayout = APRIL_TAG_FIELD_LAYOUT

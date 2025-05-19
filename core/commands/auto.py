@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 from enum import Enum, auto
 from commands2 import Command, cmd
 from wpilib import SendableChooser, SmartDashboard
-from wpimath.geometry import Pose2d, Transform2d
+from wpimath.geometry import Transform2d
 from pathplannerlib.auto import AutoBuilder
 from pathplannerlib.path import PathPlannerPath
 from lib import logger, utils
@@ -57,7 +57,6 @@ class Auto:
     self._autos.addOption("[3]", self.auto_3)
 
     self._autos.onChange(lambda auto: setattr(self, "_auto", auto()))
-
     SmartDashboard.putData("Robot/Auto", self._autos)
 
   def get(self) -> Command:
@@ -73,19 +72,22 @@ class Auto:
     return AutoBuilder.followPath(self._paths.get(path))
   
   def _alignToTarget(self, targetAlignmentLocation: TargetAlignmentLocation) -> Command:
-    return self._robot.game.alignRobotToTarget(TargetAlignmentMode.Translation, targetAlignmentLocation)
+    return (
+      self._robot.game.alignRobotToTarget(TargetAlignmentMode.Translation, targetAlignmentLocation)
+      .withTimeout(constants.Game.Commands.kAutoTargetAlignmentTimeout)
+    )
   
   def _moveAlignScore(self, autoPath: AutoPath, targetAlignmentLocation: TargetAlignmentLocation) -> Command:
     return (
-      (self._move(autoPath).andThen(self._alignToTarget(targetAlignmentLocation)))
+      self._move(autoPath).andThen(self._alignToTarget(targetAlignmentLocation))
       .deadlineFor(self._robot.game.alignRobotToTargetPosition(TargetPositionType.ReefCoralL4))
       .andThen(self._robot.game.scoreCoral())
     )
 
   def _moveAlignIntake(self, autoPath: AutoPath, targetAlignmentLocation: TargetAlignmentLocation) -> Command:
     return (
-      self._robot.game.alignRobotToTargetPosition(TargetPositionType.CoralStation)
-      .alongWith(self._move(autoPath).andThen(self._alignToTarget(targetAlignmentLocation)))
+      self._move(autoPath).andThen(self._alignToTarget(targetAlignmentLocation))
+      .alongWith(self._robot.game.alignRobotToTargetPosition(TargetPositionType.CoralStation))
       .until(lambda: self._robot.game.isGripperHolding())
     )
   
@@ -99,18 +101,6 @@ class Auto:
       self._moveAlignIntake(AutoPath.Intake_6L_A, TargetAlignmentLocation.Center)
     ).withName("Auto:[1]")
   
-  def auto_2L(self) -> Command:
-    return cmd.sequence(
-      self._moveAlignScore(AutoPath.Start_2L_2L, TargetAlignmentLocation.Left),
-      cmd.sequence(cmd.waitSeconds(2.0).andThen(self._move(AutoPath.Move_2L_A))).deadlineFor(self._robot.game.alignRobotToTargetPosition(TargetPositionType.CoralStation))
-    ).withName("Auto:[2L]")
-
-  def auto_2R(self) -> Command:
-    return cmd.sequence(
-      self._moveAlignScore(AutoPath.Start_2R_2R, TargetAlignmentLocation.Right),
-      cmd.sequence(cmd.waitSeconds(2.0).andThen(self._move(AutoPath.Move_2R_B))).deadlineFor(self._robot.game.alignRobotToTargetPosition(TargetPositionType.CoralStation))
-    ).withName("Auto:[2R]")
-  
   def auto_3(self) -> Command:
     return cmd.sequence(
       self._moveAlignScore(AutoPath.Start_3_3L, TargetAlignmentLocation.Left),
@@ -120,3 +110,21 @@ class Auto:
       self._moveAlignScore(AutoPath.Score_B_4L, TargetAlignmentLocation.Left),
       self._moveAlignIntake(AutoPath.Intake_4R_B, TargetAlignmentLocation.Center)
     ).withName("Auto:[3]")
+
+  def auto_2L(self) -> Command:
+    return cmd.sequence(
+      self._moveAlignScore(AutoPath.Start_2L_2L, TargetAlignmentLocation.Left),
+      cmd.sequence(
+        cmd.waitSeconds(2.0)
+        .andThen(self._move(AutoPath.Move_2L_A)))
+        .deadlineFor(self._robot.game.alignRobotToTargetPosition(TargetPositionType.CoralStation))
+    ).withName("Auto:[2L]")
+
+  def auto_2R(self) -> Command:
+    return cmd.sequence(
+      self._moveAlignScore(AutoPath.Start_2R_2R, TargetAlignmentLocation.Right),
+      cmd.sequence(
+        cmd.waitSeconds(2.0)
+        .andThen(self._move(AutoPath.Move_2R_B)))
+        .deadlineFor(self._robot.game.alignRobotToTargetPosition(TargetPositionType.CoralStation))
+    ).withName("Auto:[2R]")

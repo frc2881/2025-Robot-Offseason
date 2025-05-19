@@ -50,13 +50,10 @@ class Hand(Subsystem):
       lambda: setattr(self, "_isGripperHoldingManual", False)
     ).withName("Hand:HoldGripper")
   
-  def releaseGripper(self, isLowSpeed: bool = False) -> Command:
+  # TODO: test using gripper sensor as trigger for ending command vs. using a fixed timeout
+  def releaseGripper(self) -> Command:
     return self.startEnd(
-      lambda: self._gripperMotor.set(
-        -self._constants.kGripperMotorReleaseSpeedLow 
-        if isLowSpeed else 
-        -self._constants.kGripperMotorReleaseSpeed
-      ),
+      lambda: self._gripperMotor.set(-self._constants.kGripperMotorReleaseSpeed),
       lambda: self._resetGripper()
     ).withTimeout(
       self._constants.kGripperReleaseTimeout

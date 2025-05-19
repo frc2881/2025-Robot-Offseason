@@ -42,9 +42,6 @@ class Arm(Subsystem):
   
   def isAtCoralStationSafePosition(self) -> bool:
     return self._arm.getPosition() <= self._constants.kCoralStationSafePosition
-
-  def isAtReefCoralL1Position(self) -> bool:
-    return self._arm.getPosition() >= self._constants.kReefCoralL1Position
   
   def resetToZero(self) -> Command:
     return self._arm.resetToZero(self).withName("Arm:ResetToZero")
