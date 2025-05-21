@@ -35,41 +35,33 @@ class Intake(Subsystem):
       )
     )
 
-    self.setDefaultCommand(self.default())
+    self.setDefaultCommand(self.hold())
 
   def periodic(self) -> None:
     self._updateTelemetry()
-
-  def default(self) -> Command:
-    return self.hold()
-  
-  def alignToPosition(self, position: units.inches) -> Command:
-    return self.run(
-      lambda: self._intake.alignToPosition(position)
-    ).withName("Intake:AlignToPosition")
-  
-  def runRollers(self) -> Command:
-    return self.runEnd(
-      lambda: self._rollers.set(self._constants.kRollerMotorIntakeSpeed),
-      lambda: self._rollers.stopMotor()
-    ).withName("Intake:RunRoller")
   
   def hold(self) -> Command:
-    return self.run(
-      lambda: self._intake.alignToPosition(self._constants.kInPosition)
-    ).beforeStarting(
-      lambda: self._intake.reset()
-    ).until(
-      lambda: self.isAlignedToPosition()
-    ).andThen(
-      self.run(lambda: self._intake.setSpeed(self._constants.kHoldSpeed))
-    ).withName("Intake:Hold") 
+    return (
+      self.startRun(
+        lambda: self._intake.reset(),
+        lambda: self._intake.setPosition(self._constants.kInPosition)
+      )
+      .until(lambda: self.isAtTargetPosition())
+      .andThen(
+        self.startEnd(
+          lambda: self._intake.setSpeed(self._constants.kHoldSpeed),
+          lambda: None
+        )
+      )
+      .finallyDo(lambda end: self._intake.setSpeed(0))
+      .withName("Intake:Hold")
+    )
 
   def intake(self) -> Command:
     return self.runEnd(
       lambda: [
-        self._intake.alignToPosition(self._constants.kOutPosition),
-        self._rollers.set(self._constants.kRollerMotorIntakeSpeed)
+        self._intake.setPosition(self._constants.kOutPosition),
+        self._rollers.set(self._constants.kRollerMotorIntakeSpeed if self.isAtTargetPosition() else 0)
       ],
       lambda: self._rollers.stopMotor()
     ).withName("Intake:Intake")
@@ -77,8 +69,8 @@ class Intake(Subsystem):
   def handoff(self) -> Command:
     return self.runEnd(
       lambda: [
-        self._intake.alignToPosition(self._constants.kHandoffPosition),
-        self._rollers.set(self._constants.kRollerMotorHandoffSpeed)
+        self._intake.setPosition(self._constants.kHandoffPosition),
+        self._rollers.set(self._constants.kRollerMotorHandoffSpeed if self.isAtTargetPosition() else 0)
       ],
       lambda: self._rollers.stopMotor()
     ).withName("Intake:Handoff")
@@ -86,8 +78,8 @@ class Intake(Subsystem):
   def eject(self) -> Command:
     return self.runEnd(
       lambda: [
-        self._intake.alignToPosition(self._constants.kEjectPosition),
-        self._rollers.set(self._constants.kRollerMotorEjectSpeed if self.isAlignedToPosition() else 0)
+        self._intake.setPosition(self._constants.kEjectPosition),
+        self._rollers.set(self._constants.kRollerMotorEjectSpeed if self.isAtTargetPosition() else 0)
       ],
       lambda: self._rollers.stopMotor()
     ).withName("Intake:Eject")
@@ -95,19 +87,30 @@ class Intake(Subsystem):
   def climb(self) -> Command:
     return self.runEnd(
       lambda: [
-        self._intake.alignToPosition(self._constants.kOutPosition),
-        self._rollers.set(self._constants.kRollerMotorClimbSpeed if self.isAlignedToPosition() else 0)
+        self._intake.setPosition(self._constants.kOutPosition),
+        self._rollers.set(self._constants.kRollerMotorClimbSpeed if self.isAtTargetPosition() else 0)
       ],
       lambda: self._rollers.stopMotor()
     ).withName("Intake:Climb")
   
+  def setPosition(self, position: units.inches) -> Command:
+    return self.run(
+      lambda: self._intake.setPosition(position)
+    ).withName("Intake:SetPosition")
+
   def getPosition(self) -> units.inches:
     return self._intake.getPosition()
 
-  def isAlignedToPosition(self) -> bool:
-    return self._intake.isAlignedToPosition()
+  def isAtTargetPosition(self) -> bool:
+    return self._intake.isAtTargetPosition()
   
-  def isIntakeEnabled(self) -> bool:
+  def runRollers(self) -> Command:
+    return self.startEnd(
+      lambda: self._rollers.set(self._constants.kRollerMotorIntakeSpeed),
+      lambda: self._rollers.stopMotor()
+    ).withName("Intake:RunRollers")
+
+  def isIntakeRunning(self) -> bool:
     return self._rollers.get() != 0
   
   def isIntakeHolding(self) -> bool:
@@ -124,7 +127,7 @@ class Intake(Subsystem):
     self._rollers.stopMotor()
 
   def _updateTelemetry(self) -> None:
-    SmartDashboard.putBoolean("Robot/Intake/IsAlignedToPosition", self.isAlignedToPosition())
-    SmartDashboard.putBoolean("Robot/Intake/IsEnabled", self.isIntakeEnabled())
+    SmartDashboard.putBoolean("Robot/Intake/IsAtTargetPosition", self.isAtTargetPosition())
+    SmartDashboard.putBoolean("Robot/Intake/IsRunning", self.isIntakeRunning())
     SmartDashboard.putBoolean("Robot/Intake/IsHolding", self.isIntakeHolding())
-    # SmartDashboard.putNumber("Robot/Intake/Rollers/Current", self._rollers.getOutputCurrent())
+    SmartDashboard.putNumber("Robot/Intake/Rollers/Current", self._rollers.getOutputCurrent())

@@ -10,8 +10,7 @@ class Wrist(Subsystem):
     super().__init__()
     self._constants = constants.Subsystems.Wrist
 
-    self._position = Position.Unknown
-    self._isAlignedToPosition: bool = False
+    self._targetPosition = Position.Unknown
 
     self._motor = SparkMax(self._constants.kMotorCANId, SparkBase.MotorType.kBrushed)
     self._sparkConfig = SparkBaseConfig()
@@ -27,60 +26,51 @@ class Wrist(Subsystem):
   def periodic(self) -> None:
     self._updateTelemetry()
     
-  def alignToPosition(self, position: Position) -> Command:
-    return self.setPosition(position).deadlineFor(
-      cmd.waitUntil(lambda: self._position != Position.Unknown).andThen(cmd.runOnce(lambda: setattr(self, "_isAlignedToPosition", True)))
-    ).beforeStarting(
-      lambda: self._resetPositionAlignment()
-    ).withName("Wrist:AlignToPosition")
-
   def setPosition(self, position: Position) -> Command:
-    return self.startEnd(
-      lambda: [
-        self._resetPositionAlignment(),
-        self._motor.set(self._constants.kMotorUpSpeed if position == Position.Up else -self._constants.kMotorDownSpeed)
-      ],
-      lambda: self._motor.stopMotor()
-    ).withTimeout(
-      self._constants.kSetPositionTimeout
-    ).andThen(
-      cmd.runOnce(lambda: setattr(self, "_position", position))
-    ).andThen(
-      self._holdPosition(position)
-    ).finallyDo(
-      lambda end: self._motor.stopMotor()
-    ).withName("Wrist:SetPosition")
-
-  def _holdPosition(self, position: Position) -> Command:
-    return self.startEnd(
-      lambda: self._motor.set(self._constants.kMotorHoldUpSpeed if position == Position.Up else -self._constants.kMotorHoldDownSpeed),
-      lambda: self._motor.stopMotor()
+    return (
+      self.startEnd(
+        lambda: [
+          self._setTargetPosition(Position.Unknown),
+          self._motor.set(self._constants.kMotorUpSpeed if position == Position.Up else -self._constants.kMotorDownSpeed)
+        ],
+        lambda: None
+      )
+      .withTimeout(self._constants.kSetPositionTimeout)
+      .andThen(self.runOnce(lambda: self._setTargetPosition(position)))
+      .andThen(
+        self.startEnd(
+          lambda: self._motor.set(self._constants.kMotorHoldUpSpeed if position == Position.Up else -self._constants.kMotorHoldDownSpeed),
+          lambda: None
+        )
+      )
+      .finallyDo(lambda end: self._motor.stopMotor())
+      .withName("Wrist:SetPosition")
     )
-  
-  def refreshPosition(self) -> Command:
-    self.setPosition(self._position)
 
   def togglePosition(self) -> Command:
     return cmd.either(
-      self.alignToPosition(Position.Up), 
-      self.alignToPosition(Position.Down), 
-      lambda: self._position != Position.Up
+      self.setPosition(Position.Up), 
+      self.setPosition(Position.Down), 
+      lambda: self._targetPosition != Position.Up
     ).withName("Wrist:TogglePosition")
 
-  def getPosition(self) -> Position:
-    return self._position
-  
-  def isAlignedToPosition(self) -> bool:
-    return self._isAlignedToPosition
+  def refreshPosition(self) -> Command:
+    self.setPosition(self._targetPosition)
 
-  def _resetPositionAlignment(self) -> None:
-    self._position = Position.Unknown
-    self._isAlignedToPosition = False
+  def getPosition(self) -> Position:
+    return self._targetPosition
+  
+  def _setTargetPosition(self, position: Position) -> None:
+    self._targetPosition = position
+
+  def isAtTargetPosition(self) -> bool:
+    return self._targetPosition != Position.Unknown
 
   def reset(self) -> None:
     self._motor.stopMotor()
-    self._resetPositionAlignment()
+    self._setTargetPosition(Position.Unknown)
 
   def _updateTelemetry(self) -> None:
-    SmartDashboard.putBoolean("Robot/Wrist/IsAlignedToPosition", self._isAlignedToPosition)
-    SmartDashboard.putString("Robot/Wrist/Position", self._position.name)
+    SmartDashboard.putBoolean("Robot/Wrist/IsAtTargetPosition", self.isAtTargetPosition())
+    SmartDashboard.putString("Robot/Wrist/Position", self._targetPosition.name)
+    SmartDashboard.putNumber("Robot/Wrist/Current", self._motor.getOutputCurrent())

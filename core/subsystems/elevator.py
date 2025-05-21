@@ -22,11 +22,11 @@ class Elevator(Subsystem):
   def periodic(self) -> None:
     self._updateTelemetry()
 
-  def default(self, getInput: Callable[[], units.percent], elevatorStage: ElevatorStage = ElevatorStage.Both) -> Command:
+  def setSpeed(self, getInput: Callable[[], units.percent], elevatorStage: ElevatorStage = ElevatorStage.Both) -> Command:
     return self.runEnd(
       lambda: self._setSpeed(getInput() * self._constants.kInputLimit, elevatorStage),
       lambda: self.reset()
-    ).withName(f'Elevator:Run:{ elevatorStage.name }')
+    ).withName(f'Elevator:SetSpeed:{ elevatorStage.name }')
   
   def _setSpeed(self, speed: units.percent, elevatorStage: ElevatorStage) -> None:
     match elevatorStage:
@@ -44,25 +44,25 @@ class Elevator(Subsystem):
           else 0
         )
   
-  def alignToPosition(self, elevatorPosition: ElevatorPosition, isParallel: bool = True) -> Command:
+  def setPosition(self, elevatorPosition: ElevatorPosition, isParallel: bool = True) -> Command:
     return self.run(
-      lambda: self._lowerStage.alignToPosition(elevatorPosition.lowerStage),
+      lambda: self._lowerStage.setPosition(elevatorPosition.lowerStage),
     ).until(
-      lambda: self._lowerStage.isAlignedToPosition()
+      lambda: self._lowerStage.isAtTargetPosition()
     ).onlyIf(lambda: not isParallel).andThen(
       self.run(
         lambda: [
-          self._lowerStage.alignToPosition(elevatorPosition.lowerStage),
-          self._upperStage.alignToPosition(elevatorPosition.upperStage)
+          self._lowerStage.setPosition(elevatorPosition.lowerStage),
+          self._upperStage.setPosition(elevatorPosition.upperStage)
         ]
       )
-    ).withName("Elevator:AlignToPosition")
+    ).withName("Elevator:SetPosition")
 
   def getPosition(self) -> ElevatorPosition:
     return ElevatorPosition(self._lowerStage.getPosition(), self._upperStage.getPosition())
 
-  def isAlignedToPosition(self) -> bool:
-    return self._lowerStage.isAlignedToPosition() and self._upperStage.isAlignedToPosition()
+  def isAtTargetPosition(self) -> bool:
+    return self._lowerStage.isAtTargetPosition() and self._upperStage.isAtTargetPosition()
   
   def isAtReefCoralL4Position(self) -> bool:
     return self.getPosition().lowerStage > self._constants.kLowerStageReefCoralL4Position
@@ -84,4 +84,4 @@ class Elevator(Subsystem):
     self._upperStage.reset()
 
   def _updateTelemetry(self) -> None:
-    SmartDashboard.putBoolean("Robot/Elevator/IsAlignedToPosition", self.isAlignedToPosition())
+    SmartDashboard.putBoolean("Robot/Elevator/IsAtTargetPosition", self.isAtTargetPosition())

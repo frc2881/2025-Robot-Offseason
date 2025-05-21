@@ -15,8 +15,6 @@ class Hand(Subsystem):
 
     self._gripperSensorHasTarget = gripperSensorHasTarget
     
-    self._isGripperHoldingManual = False
-
     self._gripperMotor = SparkFlex(self._constants.kGripperMotorCANId, SparkBase.MotorType.kBrushless)
     self._sparkConfig = SparkBaseConfig()
     (self._sparkConfig
@@ -34,27 +32,17 @@ class Hand(Subsystem):
   def periodic(self) -> None:
     self._updateTelemetry()
       
-  def runGripper(self, isManual: bool = False) -> Command:
+  def runGripper(self) -> Command:
     return self.runEnd(
-      lambda: self._gripperMotor.set(
-        self._constants.kGripperMotorHoldSpeed 
-        if (self.isGripperHolding() and not isManual) else
-        self._constants.kGripperMotorIntakeSpeed
-      ),
-      lambda: self._resetGripper()
+      lambda: self._gripperMotor.set(self._constants.kGripperMotorIntakeSpeed if not self.isGripperHolding() else self._constants.kGripperMotorHoldSpeed),
+      lambda: self._gripperMotor.stopMotor()
     ).withName("Hand:RunGripper")
-  
-  def holdGripper(self) -> Command:
-    return cmd.runEnd(
-      lambda: setattr(self, "_isGripperHoldingManual", True),
-      lambda: setattr(self, "_isGripperHoldingManual", False)
-    ).withName("Hand:HoldGripper")
   
   # TODO: test using gripper sensor as trigger for ending command vs. using a fixed timeout
   def releaseGripper(self) -> Command:
     return self.startEnd(
       lambda: self._gripperMotor.set(-self._constants.kGripperMotorReleaseSpeed),
-      lambda: self._resetGripper()
+      lambda: self._gripperMotor.stopMotor()
     ).withTimeout(
       self._constants.kGripperReleaseTimeout
     ).withName("Hand:ReleaseGripper")
@@ -63,17 +51,13 @@ class Hand(Subsystem):
     return self._gripperMotor.get() != 0
   
   def isGripperHolding(self) -> bool:
-    return self._gripperSensorHasTarget() or self._isGripperHoldingManual
+    return self._gripperSensorHasTarget()
   
-  def _resetGripper(self) -> None:
-    self._gripperMotor.stopMotor()
-    self._isGripperHoldingManual = False
-
   def reset(self) -> None:
-    self._resetGripper()
+    self._gripperMotor.stopMotor()
 
   def _updateTelemetry(self) -> None:
     SmartDashboard.putBoolean("Robot/Hand/Gripper/IsEnabled", self.isGripperEnabled())
     SmartDashboard.putBoolean("Robot/Hand/Gripper/IsHolding", self.isGripperHolding())
-    # SmartDashboard.putNumber("Robot/Hand/Gripper/Current", self._gripperMotor.getOutputCurrent())
+    SmartDashboard.putNumber("Robot/Hand/Gripper/Current", self._gripperMotor.getOutputCurrent())
  

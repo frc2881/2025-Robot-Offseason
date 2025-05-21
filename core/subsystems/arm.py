@@ -18,27 +18,22 @@ class Arm(Subsystem):
   def periodic(self) -> None:
     self._updateTelemetry()
 
-  def default(self, getInput: Callable[[], units.percent]) -> Command:
+  def setSpeed(self, getInput: Callable[[], units.percent]) -> Command:
     return self.runEnd(
       lambda: self._arm.setSpeed(getInput() * self._constants.kInputLimit),
       lambda: self.reset()
-    ).withName("Arm:Run")
-  
-  def alignToPosition(self, position: units.inches) -> Command:
-    return self.run(
-      lambda: self._arm.alignToPosition(position)
-    ).withName("Arm:AlignToPosition")
+    ).withName("Arm:SetSpeed")
   
   def setPosition(self, position: units.inches) -> Command:
     return self.run(
       lambda: self._arm.setPosition(position)
     ).withName("Arm:SetPosition")
-
+  
   def getPosition(self) -> units.inches:
     return self._arm.getPosition()
 
-  def isAlignedToPosition(self) -> bool:
-    return self._arm.isAlignedToPosition()
+  def isAtTargetPosition(self) -> bool:
+    return self._arm.isAtTargetPosition()
   
   def isAtCoralStationSafePosition(self) -> bool:
     return self._arm.getPosition() <= self._constants.kCoralStationSafePosition
@@ -53,4 +48,4 @@ class Arm(Subsystem):
     self._arm.reset()
 
   def _updateTelemetry(self) -> None:
-    SmartDashboard.putBoolean("Robot/Arm/IsAlignedToPosition", self.isAlignedToPosition())
+    SmartDashboard.putBoolean("Robot/Arm/IsAtTargetPosition", self.isAtTargetPosition())

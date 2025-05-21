@@ -85,7 +85,7 @@ class Drive(Subsystem):
       lambda: self._drive(getInputX(), getInputY(), getInputRotation())
     ).onlyIf(
       lambda: self._lockPosition == Position.Unlocked
-    ).withName("Drive:Run")
+    ).withName("Drive:Drive")
 
   def _drive(self, inputX: units.percent, inputY: units.percent, inputRotation: units.percent) -> None:
     if self._driftCorrection == State.Enabled:
