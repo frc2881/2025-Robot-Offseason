@@ -1,5 +1,5 @@
 [tool.robotpy]
-robotpy_version = "2025.3.2.1"
+robotpy_version = "2025.3.2.2"
 requires = [
   "robotpy-commands-v2",
   "robotpy-rev",
