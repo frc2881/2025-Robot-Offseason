@@ -92,7 +92,7 @@ class Subsystems:
       translationTolerance = Tolerance(0.05, 0.1),
       translationSpeedMax = kTranslationSpeedMax * 0.3,
       rotationPID = PID(0.1, 0, 0), # TODO: recalibrate P for target alignment rotation on comp robot
-      rotationTolerance = Tolerance(0.25, 0.5),
+      rotationTolerance = Tolerance(0.5, 1.0),
       rotationSpeedMax = kRotationSpeedMax * 0.5, 
       rotationHeadingModeOffset = 0,
       rotationTranslationModeOffset = 180.0
@@ -286,7 +286,7 @@ class Controllers:
 
 class Game:
   class Commands:
-    kAutoTargetAlignmentTimeout: units.seconds = 3.0
+    kAutoTargetAlignmentTimeout: units.seconds = 1.5
 
   class Field:
     kAprilTagFieldLayout = APRIL_TAG_FIELD_LAYOUT
@@ -334,15 +334,15 @@ class Game:
       }                                                                                                                                           
 
       kTargetPositions: dict[TargetPositionType, TargetPosition] = {
-        TargetPositionType.ReefCoralL4: TargetPosition(ElevatorPosition(28.5, 28.0), 6.9, Position.Down),
-        TargetPositionType.ReefCoralL3: TargetPosition(ElevatorPosition(4.2, 27.5), 6.0, Position.Down),
-        TargetPositionType.ReefCoralL2: TargetPosition(ElevatorPosition(Value.min, 15.7), 4.25, Position.Down),
+        TargetPositionType.ReefCoralL4: TargetPosition(ElevatorPosition(28.5, 28.0), 6.9, Position.Down), # 42.0
+        TargetPositionType.ReefCoralL3: TargetPosition(ElevatorPosition(4.2, 27.5), 6.0, Position.Down), # 43.4
+        TargetPositionType.ReefCoralL2: TargetPosition(ElevatorPosition(Value.min, 15.7), 4.25, Position.Down), # 47.8
         TargetPositionType.ReefCoralL1: TargetPosition(ElevatorPosition(Value.min, 20.0), 23.0, Position.Up),
-        TargetPositionType.ReefAlgaeL3: TargetPosition(ElevatorPosition(8.0, 28.0), 18.5, Position.Up),
-        TargetPositionType.ReefAlgaeL2: TargetPosition(ElevatorPosition(6.5, 19), 24.0, Position.Up),
-        TargetPositionType.IntakeReady: TargetPosition(ElevatorPosition(15.0, Value.max), 46.0, Position.Down),
-        TargetPositionType.IntakeHandoff: TargetPosition(ElevatorPosition(10.6, Value.max), 46.0, Position.Down),
-        TargetPositionType.IntakeLift: TargetPosition(ElevatorPosition(15.0, Value.max), 38.0, Position.Down),
+        TargetPositionType.ReefAlgaeL3: TargetPosition(ElevatorPosition(8.0, 28.0), 18.5, Position.Up), # 15.0
+        TargetPositionType.ReefAlgaeL2: TargetPosition(ElevatorPosition(6.5, 19), 24.0, Position.Up), # 2.4
+        TargetPositionType.IntakeReady: TargetPosition(ElevatorPosition(15.0, Value.max), 46.0, Position.Down),  # -45.6
+        TargetPositionType.IntakeHandoff: TargetPosition(ElevatorPosition(10.6, Value.max), 46.0, Position.Down), # -45.6
+        TargetPositionType.IntakeLift: TargetPosition(ElevatorPosition(15.0, Value.max), 38.0, Position.Down), # -dc 28.2
         TargetPositionType.CoralStation: TargetPosition(ElevatorPosition(Value.min, Value.min), Value.min, Position.Up),
         TargetPositionType.CageIntercept: TargetPosition(ElevatorPosition(8.0, 18.0), 40.0, Position.Up),
         TargetPositionType.CageDeepClimb: TargetPosition(ElevatorPosition(8.0, 29.0), 70.75, Position.Up)

@@ -86,7 +86,7 @@ class Auto:
   
   def _moveAlignScore(self, autoPath: AutoPath, targetAlignmentLocation: TargetAlignmentLocation) -> Command:
     return (
-      self._move(autoPath).andThen(self._alignToTarget(targetAlignmentLocation))
+      self._move(autoPath).andThen(self._alignToTarget(targetAlignmentLocation)).andThen(cmd.waitSeconds(0.5))
       .deadlineFor(self._robot.game.setRobotToTargetPosition(TargetPositionType.ReefCoralL4))
       .andThen(
         self._robot.game.scoreCoral()
