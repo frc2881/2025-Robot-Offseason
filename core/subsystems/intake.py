@@ -61,7 +61,7 @@ class Intake(Subsystem):
     return self.runEnd(
       lambda: [
         self._intake.setPosition(self._constants.kOutPosition),
-        self._rollers.set(self._constants.kRollerMotorIntakeSpeed if self.isAtTargetPosition() else 0)
+        self._rollers.set(self._constants.kRollerMotorIntakeSpeed)
       ],
       lambda: self._rollers.stopMotor()
     ).withName("Intake:Intake")
@@ -70,7 +70,7 @@ class Intake(Subsystem):
     return self.runEnd(
       lambda: [
         self._intake.setPosition(self._constants.kHandoffPosition),
-        self._rollers.set(self._constants.kRollerMotorHandoffSpeed if self.isAtTargetPosition() else 0)
+        self._rollers.set(self._constants.kRollerMotorHandoffSpeed)
       ],
       lambda: self._rollers.stopMotor()
     ).withName("Intake:Handoff")
