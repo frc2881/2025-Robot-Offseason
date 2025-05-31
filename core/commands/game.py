@@ -149,8 +149,9 @@ class Game:
           self._robot.wrist.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.IntakeLift].wrist),
           self._robot.hand.runGripper(),
           self.rumbleControllers(ControllerRumbleMode.Both)
-        ))
-      .onlyIf(lambda: self.isIntakeHolding())
+        )
+        .onlyIf(lambda: self.isGripperHolding())
+      )
       .withName("Game:LiftCoralFromIntake")
     )
 
