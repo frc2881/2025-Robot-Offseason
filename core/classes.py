@@ -19,7 +19,6 @@ class TargetPositionType(Enum):
   IntakeReady = auto()
   IntakeHandoff = auto()
   IntakeLift = auto()
-  CageIntercept = auto()
   CageDeepClimb = auto()
 
 class TargetAlignmentLocation(Enum):

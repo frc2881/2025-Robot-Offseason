@@ -37,7 +37,6 @@ class Game:
         TargetPositionType.ReefAlgaeL3: self._setRobotToTargetPosition(TargetPositionType.ReefAlgaeL3),
         TargetPositionType.ReefAlgaeL2: self._setRobotToTargetPosition(TargetPositionType.ReefAlgaeL2),
         TargetPositionType.CoralStation: self._setRobotToTargetPositionCoralStation(),
-        TargetPositionType.CageIntercept: self._setRobotToTargetPositionCageIntercept(),
         TargetPositionType.CageDeepClimb: self._setRobotToTargetPositionCageDeepClimb()
       }, lambda: targetPositionType)
       .withName(f'Game:AlignRobotToTargetPosition:{ targetPositionType.name }')
@@ -71,21 +70,9 @@ class Game:
       )
     )
   
-  def _setRobotToTargetPositionCageIntercept(self) -> Command:
-    return cmd.sequence(
-      cmd.waitSeconds(0.5),
-      cmd.parallel(
-        self._robot.elevator.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.CageIntercept].elevator, isParallel = False),
-        cmd.waitUntil(lambda: self._robot.elevator.isAtTargetPosition()).andThen(
-          self._robot.arm.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.CageIntercept].arm)
-        ),
-        self._robot.wrist.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.CageIntercept].wrist),
-        self._robot.intake.climb()
-      )
-    ).alongWith(cmd.waitUntil(lambda: self.isRobotAtTargetPosition()).andThen(self.rumbleControllers(ControllerRumbleMode.Both)))
-
   def _setRobotToTargetPositionCageDeepClimb(self) -> Command:
     return cmd.sequence(
+      cmd.waitSeconds(0.5),
       cmd.runOnce(lambda: self._robot.elevator.setUpperStageSoftLimitsEnabled(False)),
       cmd.parallel(
         self._robot.elevator.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.CageDeepClimb].elevator, isParallel = False),
@@ -93,9 +80,7 @@ class Game:
           self._robot.arm.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.CageDeepClimb].arm)
         ),
         self._robot.wrist.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.CageDeepClimb].wrist),
-        cmd.waitUntil(lambda: self._robot.arm.isAtTargetPosition()).andThen(
-          self._robot.intake.climb()
-        )
+        self._robot.intake.climb()
       )
     ).alongWith(
       cmd.waitUntil(lambda: self.isRobotAtTargetPosition()).andThen(self.rumbleControllers(ControllerRumbleMode.Both))

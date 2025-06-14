@@ -211,7 +211,7 @@ class Subsystems:
     kRollerMotorIntakeSpeed: float = 0.8
     kRollerMotorHandoffSpeed: float = -0.4
     kRollerMotorEjectSpeed: float = -0.4
-    kRollerMotorClimbSpeed: float = -0.1
+    kRollerMotorClimbSpeed: float = 0.0
 
 class Services:
   class Localization:
@@ -344,6 +344,5 @@ class Game:
         TargetPositionType.IntakeHandoff: TargetPosition(ElevatorPosition(10.6, Value.max), 46.0, Position.Down), # -45.6
         TargetPositionType.IntakeLift: TargetPosition(ElevatorPosition(15.0, Value.max), 38.0, Position.Down), # -dc 28.2
         TargetPositionType.CoralStation: TargetPosition(ElevatorPosition(Value.min, Value.min), Value.min, Position.Up),
-        TargetPositionType.CageIntercept: TargetPosition(ElevatorPosition(8.0, 18.0), 40.0, Position.Up),
-        TargetPositionType.CageDeepClimb: TargetPosition(ElevatorPosition(8.0, 29.0), 70.75, Position.Up)
+        TargetPositionType.CageDeepClimb: TargetPosition(ElevatorPosition(8.0, 29.0), Value.max, Position.Up)
       }

@@ -74,14 +74,14 @@ class Auto:
   def _move(self, path: AutoPath) -> Command:
     return (
       AutoBuilder.followPath(self._paths.get(path))
-      .alongWith(logger.log_(f'Auto:Move:{path.name}'))
+      .deadlineFor(logger.log_(f'Auto:Move:{path.name}'))
     )
   
   def _alignToTarget(self, targetAlignmentLocation: TargetAlignmentLocation) -> Command:
     return (
       self._robot.game.alignRobotToTarget(TargetAlignmentMode.Translation, targetAlignmentLocation)
       .withTimeout(constants.Game.Commands.kAutoTargetAlignmentTimeout)
-      .alongWith(logger.log_(f'Auto:AlignToTarget:{targetAlignmentLocation.name}'))
+      .deadlineFor(logger.log_(f'Auto:AlignToTarget:{targetAlignmentLocation.name}'))
     )
   
   def _moveAlignScore(self, autoPath: AutoPath, targetAlignmentLocation: TargetAlignmentLocation) -> Command:
@@ -90,7 +90,7 @@ class Auto:
       .deadlineFor(self._robot.game.setRobotToTargetPosition(TargetPositionType.ReefCoralL4))
       .andThen(
         self._robot.game.scoreCoral()
-        .alongWith(logger.log_("Auto:ScoreCoral"))
+        .deadlineFor(logger.log_("Auto:ScoreCoral"))
       )
     )
 
@@ -99,7 +99,7 @@ class Auto:
       self._move(autoPath).andThen(self._alignToTarget(targetAlignmentLocation))
       .alongWith(
         self._robot.game.intakeCoralFromStation()
-        .alongWith(logger.log_("Auto:IntakeCoralFromStation"))
+        .deadlineFor(logger.log_("Auto:IntakeCoralFromStation"))
       )
       .until(lambda: self._robot.game.isGripperHolding())
     )
