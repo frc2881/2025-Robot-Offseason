@@ -110,7 +110,7 @@ class Subsystems:
       motorMotionMaxVelocity = 7000.0,
       motorMotionMaxAcceleration = 14000.0,
       motorMotionVelocityFF = 1.0 / 6784,
-      motorMotionAllowedClosedLoopError = 0.25,
+      motorMotionAllowedClosedLoopError = 0.5,
       motorSoftLimitForward = 29.0,
       motorSoftLimitReverse = 0.5,
       motorResetSpeed = 0.2
@@ -130,7 +130,7 @@ class Subsystems:
       motorMotionMaxVelocity = 6500.0,
       motorMotionMaxAcceleration = 13000.0,
       motorMotionVelocityFF = 1.0 / 6784,
-      motorMotionAllowedClosedLoopError = 0.25,
+      motorMotionAllowedClosedLoopError = 0.5,
       motorSoftLimitForward = 28.75,
       motorSoftLimitReverse = 0.5,
       motorResetSpeed = 0.1
@@ -154,7 +154,7 @@ class Subsystems:
       motorMotionMaxVelocity = 15000.0,
       motorMotionMaxAcceleration = 30000.0,
       motorMotionVelocityFF = 1.0 / 6784,
-      motorMotionAllowedClosedLoopError = 0.25,
+      motorMotionAllowedClosedLoopError = 0.5,
       motorSoftLimitForward = 70.75,
       motorSoftLimitReverse = 0.5,
       motorResetSpeed = 0.2
