@@ -90,10 +90,10 @@ class Subsystems:
     kTargetAlignmentConstants = TargetAlignmentConstants(
       translationPID = PID(5.0, 0, 0),
       translationTolerance = Tolerance(0.05, 0.1),
-      translationSpeedMax = kTranslationSpeedMax * 0.3,
-      rotationPID = PID(0.1, 0, 0), # TODO: recalibrate P for target alignment rotation on comp robot
+      translationSpeedMax = kTranslationSpeedMax * 0.25,
+      rotationPID = PID(0.1, 0, 0), 
       rotationTolerance = Tolerance(0.5, 1.0),
-      rotationSpeedMax = kRotationSpeedMax * 0.5, 
+      rotationSpeedMax = kRotationSpeedMax * 0.4, 
       rotationHeadingModeOffset = 0,
       rotationTranslationModeOffset = 180.0
     )
@@ -175,7 +175,7 @@ class Subsystems:
   class Hand:
     kGripperMotorCANId: int = 14
     kGripperMotorCurrentLimit: int = 40
-    kGripperMotorIntakeSpeed: units.percent = 0.8
+    kGripperMotorIntakeSpeed: units.percent = 1.0
     kGripperMotorHoldSpeed: units.percent = 0.05
     kGripperMotorReleaseSpeed: units.percent = 1.0
     kGripperReleaseTimeout: units.seconds = 0.5
@@ -209,8 +209,8 @@ class Subsystems:
     kRollerMotorCurrentLimit: int = 80
 
     kRollerMotorIntakeSpeed: float = 0.8
-    kRollerMotorHandoffSpeed: float = -0.4
-    kRollerMotorEjectSpeed: float = -0.4
+    kRollerMotorHandoffSpeed: float = -0.6
+    kRollerMotorEjectSpeed: float = -0.5
     kRollerMotorClimbSpeed: float = 0.0
 
 class Services:
@@ -327,9 +327,9 @@ class Game:
           TargetAlignmentLocation.RightL4: Transform3d(units.inchesToMeters(23.0), units.inchesToMeters(6.5), 0, Rotation3d(Rotation2d.fromDegrees(0))) 
         },
         TargetType.CoralStation: {
-          TargetAlignmentLocation.Center: Transform3d(units.inchesToMeters(20.0), units.inchesToMeters(0.0), 0, Rotation3d(Rotation2d.fromDegrees(0))),
-          TargetAlignmentLocation.Left: Transform3d(units.inchesToMeters(20.0), units.inchesToMeters(-24.0), 0, Rotation3d(Rotation2d.fromDegrees(0))),
-          TargetAlignmentLocation.Right: Transform3d(units.inchesToMeters(20.0), units.inchesToMeters(24.0), 0, Rotation3d(Rotation2d.fromDegrees(0)))
+          TargetAlignmentLocation.Center: Transform3d(units.inchesToMeters(18.0), units.inchesToMeters(0.0), 0, Rotation3d(Rotation2d.fromDegrees(0))),
+          TargetAlignmentLocation.Left: Transform3d(units.inchesToMeters(18.0), units.inchesToMeters(-24.0), 0, Rotation3d(Rotation2d.fromDegrees(0))),
+          TargetAlignmentLocation.Right: Transform3d(units.inchesToMeters(18.0), units.inchesToMeters(24.0), 0, Rotation3d(Rotation2d.fromDegrees(0)))
         }
       }                                                                                                                                           
 
@@ -340,8 +340,8 @@ class Game:
         TargetPositionType.ReefCoralL1: TargetPosition(ElevatorPosition(Value.min, 20.0), 23.0, Position.Up),
         TargetPositionType.ReefAlgaeL3: TargetPosition(ElevatorPosition(8.0, 28.0), 18.5, Position.Up), # 15.0
         TargetPositionType.ReefAlgaeL2: TargetPosition(ElevatorPosition(6.5, 19), 24.0, Position.Up), # 2.4
-        TargetPositionType.IntakeReady: TargetPosition(ElevatorPosition(15.0, Value.max), 46.0, Position.Down),  # -45.6
-        TargetPositionType.IntakeHandoff: TargetPosition(ElevatorPosition(10.6, Value.max), 46.0, Position.Down), # -45.6
+        TargetPositionType.IntakeReady: TargetPosition(ElevatorPosition(15.0, Value.max), 45.0, Position.Down),  # -45.6
+        TargetPositionType.IntakeHandoff: TargetPosition(ElevatorPosition(10.6, Value.max), 45.0, Position.Down), # -45.6
         TargetPositionType.IntakeLift: TargetPosition(ElevatorPosition(15.0, Value.max), 38.0, Position.Down), # -dc 28.2
         TargetPositionType.CoralStation: TargetPosition(ElevatorPosition(Value.min, Value.min), Value.min, Position.Up),
         TargetPositionType.CageDeepClimb: TargetPosition(ElevatorPosition(8.0, 29.0), Value.max, Position.Up)
