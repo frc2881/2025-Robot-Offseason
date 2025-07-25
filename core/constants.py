@@ -90,10 +90,10 @@ class Subsystems:
     kTargetAlignmentConstants = TargetAlignmentConstants(
       translationPID = PID(5.0, 0, 0),
       translationTolerance = Tolerance(0.05, 0.1),
-      translationSpeedMax = kTranslationSpeedMax * 0.25,
+      translationSpeedMax = kTranslationSpeedMax * 0.2,
       rotationPID = PID(0.1, 0, 0), 
       rotationTolerance = Tolerance(0.5, 1.0),
-      rotationSpeedMax = kRotationSpeedMax * 0.4, 
+      rotationSpeedMax = kRotationSpeedMax * 0.2, 
       rotationHeadingModeOffset = 0,
       rotationTranslationModeOffset = 180.0
     )
