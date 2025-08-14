@@ -3,8 +3,8 @@
   "windows": {
     "options": {
       "shell": {
-        "executable": "cmd.exe",
-        "args": ["/C", ".venv\\Scripts\\activate.bat", "&"]
+        "executable": "powershell",
+        "args": [".venv\\Scripts\\activate.ps1", ";"]
       }
     }
   },
