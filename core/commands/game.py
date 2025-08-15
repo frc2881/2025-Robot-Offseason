@@ -121,7 +121,9 @@ class Game:
           self._robot.arm.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.IntakeHandoff].arm),
           self._robot.wrist.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.IntakeHandoff].wrist),
           cmd.sequence(
-            self._robot.intake.setPosition(constants.Subsystems.Intake.kHandoffPosition).until(lambda: self.isRobotAtTargetPosition()),
+            self._robot.intake.setPosition(constants.Subsystems.Intake.kHandoffPosition).until(
+              lambda: self.isRobotAtTargetPosition() and self._robot.intake.isAtTargetPosition()
+            ),
             cmd.parallel(
               self._robot.hand.runGripper(),
               self._robot.intake.handoff()

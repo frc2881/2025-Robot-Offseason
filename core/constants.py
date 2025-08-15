@@ -192,14 +192,14 @@ class Subsystems:
       motorMotionMaxVelocity = 12000.0,
       motorMotionMaxAcceleration = 24000.0,
       motorMotionVelocityFF = 1.0 / 6784,
-      motorMotionAllowedClosedLoopError = 0.25,
+      motorMotionAllowedClosedLoopError = 0.5,
       motorSoftLimitForward = 12.0,
       motorSoftLimitReverse = 0,
       motorResetSpeed = 0.2
     ))
 
     kInPosition: float = 0
-    kOutPosition: float = 12.0
+    kOutPosition: float = 11.5
     kHandoffPosition: float = 0
     kEjectPosition: float = 2.6
     kHoldSpeed: float = -0.05
@@ -327,9 +327,9 @@ class Game:
           TargetAlignmentLocation.RightL4: Transform3d(units.inchesToMeters(23.0), units.inchesToMeters(6.5), 0, Rotation3d(Rotation2d.fromDegrees(0))) 
         },
         TargetType.CoralStation: {
-          TargetAlignmentLocation.Center: Transform3d(units.inchesToMeters(18.0), units.inchesToMeters(0.0), 0, Rotation3d(Rotation2d.fromDegrees(0))),
-          TargetAlignmentLocation.Left: Transform3d(units.inchesToMeters(18.0), units.inchesToMeters(-24.0), 0, Rotation3d(Rotation2d.fromDegrees(0))),
-          TargetAlignmentLocation.Right: Transform3d(units.inchesToMeters(18.0), units.inchesToMeters(24.0), 0, Rotation3d(Rotation2d.fromDegrees(0)))
+          TargetAlignmentLocation.Center: Transform3d(units.inchesToMeters(16.0), units.inchesToMeters(0.0), 0, Rotation3d(Rotation2d.fromDegrees(0))),
+          TargetAlignmentLocation.Left: Transform3d(units.inchesToMeters(16.0), units.inchesToMeters(-24.0), 0, Rotation3d(Rotation2d.fromDegrees(0))),
+          TargetAlignmentLocation.Right: Transform3d(units.inchesToMeters(16.0), units.inchesToMeters(24.0), 0, Rotation3d(Rotation2d.fromDegrees(0)))
         }
       }                                                                                                                                           
 
