@@ -2,12 +2,12 @@ import math
 from wpimath import units
 from wpimath.geometry import Transform3d, Translation3d, Rotation3d, Translation2d, Rotation2d
 from wpimath.kinematics import SwerveDrive4Kinematics
+from wpimath.trajectory import TrapezoidProfile
 import wpilib
 from robotpy_apriltag import AprilTagFieldLayout
 from navx import AHRS
 from pathplannerlib.config import RobotConfig
 from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants
-from pathplannerlib.pathfinding import PathConstraints
 from photonlibpy.photonPoseEstimator import PoseStrategy
 from rev import SparkLowLevel
 from lib import logger, utils
@@ -26,8 +26,7 @@ from lib.classes import (
   PoseSensorConstants,
   PoseSensorConfig,
   PositionControlModuleConstants,
-  PositionControlModuleConfig,
-  DistanceSensorConfig
+  PositionControlModuleConfig
 )
 from core.classes import (
   Target, 
@@ -39,7 +38,6 @@ from core.classes import (
 )
 
 APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout(f'{ wpilib.getDeployDirectory() }/localization/2025-reefscape-andymark-filtered.json')
-# TODO: update PhotonVision instances on coprocessors to use AndyMark layout JSON
 PATHPLANNER_ROBOT_CONFIG = RobotConfig.fromGUISettings()
 
 class Subsystems:
@@ -83,17 +81,18 @@ class Subsystems:
     kPathPlannerController = PPHolonomicDriveController(PIDConstants(5.0, 0, 0), PIDConstants(5.0, 0, 0))
 
     kDriftCorrectionConstants = DriftCorrectionConstants(
-      rotationPID = PID(0.01, 0, 0), 
+      rotationPID = PID(0.01, 0, 0),
+      rotationConstraints = TrapezoidProfile.Constraints(kRotationSpeedMax, kRotationSpeedMax * 2),
       rotationTolerance = Tolerance(0.5, 1.0)
     )
 
     kTargetAlignmentConstants = TargetAlignmentConstants(
       translationPID = PID(5.0, 0, 0),
+      translationConstraints = TrapezoidProfile.Constraints(kTranslationSpeedMax * 0.2, kTranslationSpeedMax * 0.2 * 2),
       translationTolerance = Tolerance(0.05, 0.1),
-      translationSpeedMax = kTranslationSpeedMax * 0.2,
       rotationPID = PID(0.1, 0, 0), 
+      rotationConstraints = TrapezoidProfile.Constraints(kRotationSpeedMax * 0.2, kRotationSpeedMax * 0.2 * 2),
       rotationTolerance = Tolerance(0.5, 1.0),
-      rotationSpeedMax = kRotationSpeedMax * 0.2, 
       rotationHeadingModeOffset = 0,
       rotationTranslationModeOffset = 180.0
     )
