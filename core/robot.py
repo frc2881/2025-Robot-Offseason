@@ -89,7 +89,7 @@ class RobotCore:
         .or_(self.driver.povDown())
       ).not_()
     ).whileTrue(self.intake.resetToZero())
-    self.driver.back().onTrue(self.gyro.reset())
+    self.driver.back().whileTrue(cmd.waitSeconds(0.5).andThen(self.gyro.reset()))
 
   def _setupOperator(self) -> None:
     self.elevator.setDefaultCommand(self.elevator.setSpeed(self.operator.getLeftY))

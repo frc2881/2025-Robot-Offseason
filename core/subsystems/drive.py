@@ -3,7 +3,8 @@ from ntcore import NetworkTableInstance
 from commands2 import Subsystem, Command
 from wpilib import SmartDashboard, SendableChooser
 from wpimath import units
-from wpimath.controller import PIDController
+from wpimath.controller import PIDController, ProfiledPIDController
+from wpimath.trajectory import TrapezoidProfile
 from wpimath.filter import SlewRateLimiter
 from wpimath.geometry import Rotation2d, Pose2d, Pose3d
 from wpimath.kinematics import ChassisSpeeds, SwerveModulePosition, SwerveModuleState, SwerveDrive4Kinematics
@@ -35,9 +36,9 @@ class Drive(Subsystem):
     self._driftCorrectionController.enableContinuousInput(-180.0, 180.0)
     self._driftCorrectionState = State.Stopped
 
-    self._targetAlignmentTranslationXController = PIDController(*self._constants.kTargetAlignmentConstants.translationPID)
+    self._targetAlignmentTranslationXController = ProfiledPIDController(*self._constants.kTargetAlignmentConstants.translationPID, TrapezoidProfile.Constraints(self._constants.kTargetAlignmentConstants.translationSpeedMax, self._constants.kTargetAlignmentConstants.translationSpeedMax))
     self._targetAlignmentTranslationXController.setTolerance(*self._constants.kTargetAlignmentConstants.translationTolerance)
-    self._targetAlignmentTranslationYController = PIDController(*self._constants.kTargetAlignmentConstants.translationPID)
+    self._targetAlignmentTranslationYController = ProfiledPIDController(*self._constants.kTargetAlignmentConstants.translationPID, TrapezoidProfile.Constraints(self._constants.kTargetAlignmentConstants.translationSpeedMax, self._constants.kTargetAlignmentConstants.translationSpeedMax))
     self._targetAlignmentTranslationYController.setTolerance(*self._constants.kTargetAlignmentConstants.translationTolerance)
     self._targetAlignmentRotationController = PIDController(*self._constants.kTargetAlignmentConstants.rotationPID)
     self._targetAlignmentRotationController.setTolerance(*self._constants.kTargetAlignmentConstants.rotationTolerance)
@@ -179,10 +180,10 @@ class Drive(Subsystem):
     self._resetTargetAlignment()
     self._targetAlignmentPose = targetAlignmentPose
     self._targetAlignmentState = State.Running
-    self._targetAlignmentTranslationXController.reset()
-    self._targetAlignmentTranslationXController.setSetpoint(0)
-    self._targetAlignmentTranslationYController.reset()
-    self._targetAlignmentTranslationYController.setSetpoint(0)
+    self._targetAlignmentTranslationXController.reset(0)
+    self._targetAlignmentTranslationXController.setGoal(0)
+    self._targetAlignmentTranslationYController.reset(0)
+    self._targetAlignmentTranslationYController.setGoal(0)
     self._targetAlignmentRotationController.reset()
     self._targetAlignmentRotationController.setSetpoint(
       utils.wrapAngle(utils.getTargetHeading(robotPose, targetAlignmentPose) + self._constants.kTargetAlignmentConstants.rotationHeadingModeOffset)
@@ -196,13 +197,13 @@ class Drive(Subsystem):
     speedRotation = 0
     if targetAlignmentMode == TargetAlignmentMode.Translation:
       targetTranslation = self._targetAlignmentPose.toPose2d() - robotPose
-      if not self._targetAlignmentTranslationXController.atSetpoint():
+      if not self._targetAlignmentTranslationXController.atGoal():
         speedTranslationX = -utils.clampValue(
           self._targetAlignmentTranslationXController.calculate(targetTranslation.X()), 
           -self._constants.kTargetAlignmentConstants.translationSpeedMax, 
           self._constants.kTargetAlignmentConstants.translationSpeedMax
         )
-      if not self._targetAlignmentTranslationYController.atSetpoint():
+      if not self._targetAlignmentTranslationYController.atGoal():
         speedTranslationY = -utils.clampValue(
           self._targetAlignmentTranslationYController.calculate(targetTranslation.Y()), 
           -self._constants.kTargetAlignmentConstants.translationSpeedMax, 

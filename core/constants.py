@@ -340,8 +340,8 @@ class Game:
         TargetPositionType.ReefCoralL1: TargetPosition(ElevatorPosition(Value.min, 20.0), 23.0, Position.Up),
         TargetPositionType.ReefAlgaeL3: TargetPosition(ElevatorPosition(8.0, 28.0), 18.5, Position.Up), # 15.0
         TargetPositionType.ReefAlgaeL2: TargetPosition(ElevatorPosition(6.5, 19), 24.0, Position.Up), # 2.4
-        TargetPositionType.IntakeReady: TargetPosition(ElevatorPosition(15.0, Value.max), 45.0, Position.Down),  # -45.6
-        TargetPositionType.IntakeHandoff: TargetPosition(ElevatorPosition(10.6, Value.max), 45.0, Position.Down), # -45.6
+        TargetPositionType.IntakeReady: TargetPosition(ElevatorPosition(18.0, Value.max), 45.0, Position.Down),  # -45.6
+        TargetPositionType.IntakeHandoff: TargetPosition(ElevatorPosition(11.0, Value.max), 45.0, Position.Down), # -45.6
         TargetPositionType.IntakeLift: TargetPosition(ElevatorPosition(15.0, Value.max), 38.0, Position.Down), # -dc 28.2
         TargetPositionType.CoralStation: TargetPosition(ElevatorPosition(Value.min, Value.min), Value.min, Position.Up),
         TargetPositionType.CageDeepClimb: TargetPosition(ElevatorPosition(8.0, 29.0), Value.max, Position.Up)

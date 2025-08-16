@@ -110,7 +110,7 @@ class Intake(Subsystem):
       lambda: self._rollers.stopMotor()
     ).withName("Intake:RunRollers")
 
-  def isIntakeRunning(self) -> bool:
+  def isIntakeEnabled(self) -> bool:
     return self._rollers.get() != 0
   
   def isIntakeHolding(self) -> bool:
@@ -128,6 +128,6 @@ class Intake(Subsystem):
 
   def _updateTelemetry(self) -> None:
     SmartDashboard.putBoolean("Robot/Intake/IsAtTargetPosition", self.isAtTargetPosition())
-    SmartDashboard.putBoolean("Robot/Intake/IsRunning", self.isIntakeRunning())
+    SmartDashboard.putBoolean("Robot/Intake/IsEnabled", self.isIntakeEnabled())
     SmartDashboard.putBoolean("Robot/Intake/IsHolding", self.isIntakeHolding())
     SmartDashboard.putNumber("Robot/Intake/Rollers/Current", self._rollers.getOutputCurrent())
