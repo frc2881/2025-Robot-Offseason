@@ -39,7 +39,6 @@ from core.classes import (
 )
 
 APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout(f'{ wpilib.getDeployDirectory() }/localization/2025-reefscape-andymark-filtered.json')
-# TODO: update PhotonVision instances on coprocessors to use AndyMark layout JSON
 PATHPLANNER_ROBOT_CONFIG = RobotConfig.fromGUISettings()
 
 class Subsystems:
@@ -50,7 +49,7 @@ class Subsystems:
     kWheelBase: units.meters = units.inchesToMeters(26.0)
 
     kTranslationSpeedMax: units.meters_per_second = 5.74
-    kRotationSpeedMax: units.radians_per_second = 4 * math.pi
+    kRotationSpeedMax: units.degrees_per_second = 720.0
 
     kInputLimitDemo: units.percent = 0.5
     kInputRateLimitDemo: units.percent = 0.33
@@ -71,10 +70,10 @@ class Subsystems:
     )
 
     kSwerveModuleConfigs: tuple[SwerveModuleConfig, ...] = (
-      SwerveModuleConfig(SwerveModuleLocation.FrontLeft, 2, 3, -math.pi / 2, Translation2d(kWheelBase / 2, kTrackWidth / 2), _swerveModuleConstants),
+      SwerveModuleConfig(SwerveModuleLocation.FrontLeft, 2, 3, -90, Translation2d(kWheelBase / 2, kTrackWidth / 2), _swerveModuleConstants),
       SwerveModuleConfig(SwerveModuleLocation.FrontRight, 4, 5, 0, Translation2d(kWheelBase / 2, -kTrackWidth / 2), _swerveModuleConstants),
-      SwerveModuleConfig(SwerveModuleLocation.RearLeft, 6, 7, math.pi, Translation2d(-kWheelBase / 2, kTrackWidth / 2), _swerveModuleConstants),
-      SwerveModuleConfig(SwerveModuleLocation.RearRight, 8, 9, math.pi / 2, Translation2d(-kWheelBase / 2, -kTrackWidth / 2), _swerveModuleConstants)
+      SwerveModuleConfig(SwerveModuleLocation.RearLeft, 6, 7, 180, Translation2d(-kWheelBase / 2, kTrackWidth / 2), _swerveModuleConstants),
+      SwerveModuleConfig(SwerveModuleLocation.RearRight, 8, 9, 90, Translation2d(-kWheelBase / 2, -kTrackWidth / 2), _swerveModuleConstants)
     )
 
     kDriveKinematics = SwerveDrive4Kinematics(*(c.translation for c in kSwerveModuleConfigs))
@@ -88,12 +87,12 @@ class Subsystems:
     )
 
     kTargetAlignmentConstants = TargetAlignmentConstants(
-      translationPID = PID(4.0, 0, 0),
+      translationPID = PID(5.0, 0, 0),
       translationTolerance = Tolerance(0.05, 0.1),
-      translationSpeedMax = kTranslationSpeedMax * 0.2,
-      rotationPID = PID(0.1, 0, 0), 
+      translationSpeedMax = 1.0,
+      rotationPID = PID(5.0, 0, 0), 
       rotationTolerance = Tolerance(0.5, 1.0),
-      rotationSpeedMax = kRotationSpeedMax * 0.2, 
+      rotationSpeedMax = 90.0, 
       rotationHeadingModeOffset = 0,
       rotationTranslationModeOffset = 180.0
     )

@@ -110,12 +110,12 @@ class Drive(Subsystem):
 
     speedX: units.meters_per_second = inputX * self._constants.kTranslationSpeedMax
     speedY: units.meters_per_second = inputY * self._constants.kTranslationSpeedMax
-    speedRotation: units.radians_per_second = inputRotation * self._constants.kRotationSpeedMax
+    speedRotation: units.degrees_per_second = inputRotation * self._constants.kRotationSpeedMax
     
     self.setChassisSpeeds(
-      ChassisSpeeds.fromFieldRelativeSpeeds(speedX, speedY, speedRotation, Rotation2d.fromDegrees(self._getGyroHeading()))
+      ChassisSpeeds.fromFieldRelativeSpeeds(speedX, speedY, units.degreesToRadians(speedRotation), Rotation2d.fromDegrees(self._getGyroHeading()))
       if self._orientation == DriveOrientation.Field else
-      ChassisSpeeds(speedX, speedY, speedRotation)
+      ChassisSpeeds(speedX, speedY, units.degreesToRadians(speedRotation))
     )
 
   def setChassisSpeeds(self, chassisSpeeds: ChassisSpeeds, driveFeedforwards: DriveFeedforwards = None) -> None:
@@ -173,7 +173,7 @@ class Drive(Subsystem):
     ).until(
       lambda: self._targetAlignmentState == State.Completed
     ).finallyDo(
-      lambda end: self._endAlignToTarget()
+      lambda end: self._endTargetAlignment()
     ).withName("Drive:AlignToTarget")
   
   def _initTargetAlignment(self, robotPose: Pose2d, targetAlignmentPose: Pose3d, targetAlignmentMode: TargetAlignmentMode) -> None:
@@ -196,19 +196,22 @@ class Drive(Subsystem):
     speedTranslationY = 0
     speedRotation = 0
     if targetAlignmentMode == TargetAlignmentMode.Translation:
+
       targetTranslation = self._targetAlignmentPose.toPose2d() - robotPose
       if not self._targetAlignmentTranslationXController.atGoal():
         speedTranslationX = -self._targetAlignmentTranslationXController.calculate(targetTranslation.X())
       if not self._targetAlignmentTranslationYController.atGoal():
         speedTranslationY = -self._targetAlignmentTranslationYController.calculate(targetTranslation.Y())
+
     if not self._targetAlignmentRotationController.atGoal():
       speedRotation = self._targetAlignmentRotationController.calculate(robotPose.rotation().degrees())
       
-    self._setSwerveModuleStates(ChassisSpeeds(speedTranslationX, speedTranslationY, speedRotation))
+    self._setSwerveModuleStates(ChassisSpeeds(speedTranslationX, speedTranslationY, units.degreesToRadians(speedRotation)))
+
     if speedRotation == 0 and speedTranslationX == 0 and speedTranslationY == 0:
       self._targetAlignmentState = State.Completed
 
-  def _endAlignToTarget(self) -> None:
+  def _endTargetAlignment(self) -> None:
     self._setSwerveModuleStates(ChassisSpeeds())
     if self._targetAlignmentState != State.Completed:
       self._targetAlignmentState = State.Stopped
