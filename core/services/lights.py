@@ -11,12 +11,12 @@ class Lights():
       hasAllZeroResets: Callable[[], bool],
       hasValidVisionTarget: Callable[[], bool],
       isRobotAlignedForScoring: Callable[[], bool],
-      isGripperHolding: Callable[[], bool]
+      isHandHolding: Callable[[], bool]
     ) -> None:
     super().__init__()
     self._hasAllZeroResets = hasAllZeroResets
     self._hasValidVisionTarget = hasValidVisionTarget
-    self._isGripperHolding = isGripperHolding
+    self._isHandHolding = isHandHolding
     self._isRobotAlignedForScoring = isRobotAlignedForScoring
 
     self._lightsController = LightsController()
@@ -39,13 +39,10 @@ class Lights():
         self._lightsController.setMode(LightsMode.VisionNotReady)
         return
     else:
-      if utils.getRobotMode() == RobotMode.Teleop and utils.isValueInRange(utils.getMatchTime(), 0.02, 15):
-        self._lightsController.setMode(LightsMode.ClimbReady)
-        return
       if self._isRobotAlignedForScoring():
         self._lightsController.setMode(LightsMode.ScoreReady)
         return
-      if self._isGripperHolding():
+      if self._isHandHolding():
         self._lightsController.setMode(LightsMode.IntakeReady)
         return
       

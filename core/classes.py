@@ -17,9 +17,6 @@ class TargetPositionType(Enum):
   ReefAlgaeL2 = auto()
   CoralStation = auto()
   IntakeReady = auto()
-  IntakeHandoff = auto()
-  IntakeLift = auto()
-  CageDeepClimb = auto()
 
 class TargetAlignmentLocation(Enum):
   Center = auto()
@@ -54,7 +51,7 @@ class ElevatorStage(Enum):
 class TargetPosition:
   elevator: ElevatorPosition
   arm: units.inches
-  wrist: Position
+  wrist: units.inches
 
 class LightsMode(Enum):
   Default = auto()
@@ -63,4 +60,3 @@ class LightsMode(Enum):
   VisionNotReady = auto()
   IntakeReady = auto()
   ScoreReady = auto()
-  ClimbReady = auto()

@@ -101,7 +101,7 @@ class Auto:
         self._robot.game.intakeCoralFromStation()
         .deadlineFor(logger.log_("Auto:IntakeCoralFromStation"))
       )
-      .until(lambda: self._robot.game.isGripperHolding())
+      .until(lambda: self._robot.game.isHandHolding())
     )
   
   def auto_1(self) -> Command:

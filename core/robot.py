@@ -1,9 +1,8 @@
-from commands2 import Command, cmd
+from commands2 import cmd
 from wpilib import DriverStation, SmartDashboard
 from lib import logger, utils
 from lib.classes import TargetAlignmentMode
 from lib.controllers.xbox import Xbox
-from lib.sensors.distance import DistanceSensor
 from lib.sensors.binary import BinarySensor
 from lib.sensors.gyro_navx2 import Gyro_NAVX2
 from lib.sensors.pose import PoseSensor
@@ -14,7 +13,6 @@ from core.subsystems.elevator import Elevator
 from core.subsystems.arm import Arm
 from core.subsystems.wrist import Wrist
 from core.subsystems.hand import Hand
-from core.subsystems.intake import Intake
 from core.services.localization import Localization
 from core.services.lights import Lights
 from core.classes import TargetAlignmentLocation, TargetPositionType, ElevatorStage
@@ -35,16 +33,14 @@ class RobotCore:
     self.gyro = Gyro_NAVX2(constants.Sensors.Gyro.NAVX2.kComType)
     self.poseSensors = tuple(PoseSensor(c) for c in constants.Sensors.Pose.kPoseSensorConfigs)
     SmartDashboard.putString("Robot/Sensors/Camera/Streams", utils.toJson(constants.Sensors.Camera.kStreams))
-    self.gripperSensor = BinarySensor("Gripper", constants.Sensors.Binary.Gripper.kChannel) 
-    self.intakeSensor = BinarySensor("Intake", constants.Sensors.Binary.Intake.kChannel) 
+    self.handSensor = BinarySensor("Hand", constants.Sensors.Binary.Hand.kChannel) 
     
   def _initSubsystems(self) -> None:
     self.drive = Drive(self.gyro.getHeading)
     self.elevator = Elevator()
     self.arm = Arm()
     self.wrist = Wrist()
-    self.hand = Hand(self.gripperSensor.hasTarget)
-    self.intake = Intake(self.intakeSensor.hasTarget)
+    self.hand = Hand(self.handSensor.hasTarget)
     
   def _initServices(self) -> None:
     self.localization = Localization(
@@ -79,25 +75,19 @@ class RobotCore:
     # self.driver.povLeft().and_((self.driver.start()).not_()).whileTrue(cmd.none())
     # self.driver.povRight().and_((self.driver.start()).not_()).whileTrue(cmd.none())
     # self.driver.a().whileTrue(cmd.none())
-    self.driver.b().whileTrue(self.intake.eject())
-    self.driver.y().whileTrue(self.elevator.setSpeed(lambda: constants.Subsystems.Elevator.kCageDeepClimbDownSpeed, ElevatorStage.Lower))
-    self.driver.x().whileTrue(self.elevator.setSpeed(lambda: constants.Subsystems.Elevator.kCageDeepClimbUpSpeed, ElevatorStage.Lower))
-    self.driver.start().and_((
-        self.driver.povLeft()
-        .or_(self.driver.povUp())
-        .or_(self.driver.povRight())
-        .or_(self.driver.povDown())
-      ).not_()
-    ).whileTrue(self.intake.resetToZero())
+    # self.driver.b().whileTrue(cmd.none())
+    # self.driver.y().whileTrue(cmd.none())
+    # self.driver.x().whileTrue(cmd.none())
+    # self.driver.start().whileTrue(cmd.none())
     self.driver.back().whileTrue(cmd.waitSeconds(0.5).andThen(self.gyro.reset()))
 
   def _setupOperator(self) -> None:
     self.elevator.setDefaultCommand(self.elevator.setSpeed(self.operator.getLeftY))
     self.arm.setDefaultCommand(self.arm.setSpeed(self.operator.getRightY))
-    self.operator.leftTrigger().whileTrue(self.game.runGripper())
-    self.operator.rightTrigger().whileTrue(self.game.scoreCoral())
+    # self.operator.leftTrigger().whileTrue(cmd.none())
+    # self.operator.rightTrigger().whileTrue(cmd.none())
     # self.operator.leftBumper().whileTrue(cmd.none())
-    self.operator.rightBumper().whileTrue(self.game.liftCoralFromIntake())
+    # self.operator.rightBumper().whileTrue(cmd.none())
     self.operator.povUp().and_((self.operator.start()).not_()).whileTrue(self.game.setRobotToTargetPosition(TargetPositionType.ReefCoralL4))
     self.operator.povRight().and_((self.operator.start()).not_()).whileTrue(self.game.setRobotToTargetPosition(TargetPositionType.ReefCoralL3))
     self.operator.povDown().and_((self.operator.start()).not_()).whileTrue(self.game.setRobotToTargetPosition(TargetPositionType.ReefCoralL2))
@@ -105,10 +95,10 @@ class RobotCore:
     self.operator.a().whileTrue(self.game.intakeCoralFromStation())
     self.operator.b().whileTrue(self.game.setRobotToTargetPosition(TargetPositionType.ReefAlgaeL2))
     self.operator.y().whileTrue(self.game.setRobotToTargetPosition(TargetPositionType.ReefAlgaeL3))
-    self.operator.x().whileTrue(self.game.setRobotToTargetPosition(TargetPositionType.CageDeepClimb))
+    # self.operator.x().whileTrue(cmd.none())
     self.operator.start().and_(self.operator.povDown()).whileTrue(self.elevator.resetLowerStageToZero())
     self.operator.start().and_(self.operator.povUp()).whileTrue(self.elevator.resetUpperStageToZero())
-    self.operator.start().and_(self.operator.povRight()).whileTrue(self.wrist.togglePosition())
+    self.operator.start().and_(self.operator.povRight()).whileTrue(self.wrist.resetToZero())
     self.operator.start().and_(self.operator.povLeft()).whileTrue(self.arm.resetToZero())
     self.operator.start().and_((
         self.operator.povLeft()
@@ -124,7 +114,7 @@ class RobotCore:
       self._hasAllZeroResets,
       self.localization.hasValidVisionTarget,
       self.game.isRobotReadyForScoring,
-      self.game.isGripperHolding
+      self.game.isHandHolding
     )
 
   def _periodic(self) -> None:
@@ -154,7 +144,6 @@ class RobotCore:
     self.arm.reset()
     self.wrist.reset()
     self.hand.reset()
-    self.intake.reset()
 
   def _hasAllZeroResets(self) -> bool:
     return (

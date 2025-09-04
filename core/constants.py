@@ -1,4 +1,3 @@
-import math
 from wpimath import units
 from wpimath.geometry import Transform3d, Translation3d, Rotation3d, Translation2d, Rotation2d
 from wpimath.kinematics import SwerveDrive4Kinematics
@@ -7,15 +6,13 @@ from robotpy_apriltag import AprilTagFieldLayout
 from navx import AHRS
 from pathplannerlib.config import RobotConfig
 from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants
-from pathplannerlib.pathfinding import PathConstraints
 from photonlibpy.photonPoseEstimator import PoseStrategy
 from rev import SparkLowLevel
 from lib import logger, utils
 from lib.classes import (
   Alliance, 
   PID, 
-  Tolerance, 
-  Position, 
+  Tolerance,  
   Range,
   Value,
   SwerveModuleConstants, 
@@ -26,8 +23,7 @@ from lib.classes import (
   PoseSensorConstants,
   PoseSensorConfig,
   PositionControlModuleConstants,
-  PositionControlModuleConfig,
-  DistanceSensorConfig
+  PositionControlModuleConfig
 )
 from core.classes import (
   Target, 
@@ -165,54 +161,32 @@ class Subsystems:
     kInputLimit: units.percent = 0.6
 
   class Wrist:
-    kMotorCANId: int = 13
-    kMotorCurrentLimit: int = 20
-    kMotorUpSpeed: units.percent = 0.7
-    kMotorDownSpeed: units.percent = 0.15
-    kMotorHoldUpSpeed: units.percent = 0.5
-    kMotorHoldDownSpeed: units.percent = 1.0
-    kSetPositionTimeout: units.seconds = 1.0
-
-  class Hand:
-    kGripperMotorCANId: int = 14
-    kGripperMotorCurrentLimit: int = 40
-    kGripperMotorIntakeSpeed: units.percent = 1.0
-    kGripperMotorHoldSpeed: units.percent = 0.05
-    kGripperMotorReleaseSpeed: units.percent = 1.0
-    kGripperReleaseTimeout: units.seconds = 0.5
-
-  class Intake:
-    kIntakeConfig = PositionControlModuleConfig("Intake", 15, None, False, PositionControlModuleConstants(
+    kWristConfig = PositionControlModuleConfig("Wrist", 13, None, False, PositionControlModuleConstants(
       distancePerRotation = 1.0,
       motorControllerType = SparkLowLevel.SparkModel.kSparkMax,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 60,
       motorReduction = 1.0 / 1.0,
-      motorPID = PID(0.1, 0, 0.08),
-      motorOutputRange = Range(-0.4, 0.3),
-      motorMotionMaxVelocity = 12000.0,
-      motorMotionMaxAcceleration = 24000.0,
+      motorPID = PID(0.1, 0, 0),
+      motorOutputRange = Range(-0.8, 0.6),
+      motorMotionMaxVelocity = 15000.0,
+      motorMotionMaxAcceleration = 30000.0,
       motorMotionVelocityFF = 1.0 / 6784,
       motorMotionAllowedClosedLoopError = 0.5,
-      motorSoftLimitForward = 12.0,
-      motorSoftLimitReverse = 0,
+      motorSoftLimitForward = 1.0,
+      motorSoftLimitReverse = 0.5,
       motorResetSpeed = 0.2
     ))
+    
+    kInputLimit: units.percent = 0.6
 
-    kInPosition: float = 0
-    kOutPosition: float = 11.5
-    kHandoffPosition: float = 0
-    kEjectPosition: float = 2.6
-    kHoldSpeed: float = -0.05
-    kInputLimit: units.percent = 0.3
-
-    kRollerMotorCANId: int = 21
-    kRollerMotorCurrentLimit: int = 80
-
-    kRollerMotorIntakeSpeed: float = 1.0
-    kRollerMotorHandoffSpeed: float = -0.6
-    kRollerMotorEjectSpeed: float = -0.5
-    kRollerMotorClimbSpeed: float = 0.0
+  class Hand:
+    kMotorCANId: int = 14
+    kMotorCurrentLimit: int = 40
+    kMotorIntakeSpeed: units.percent = 0.5
+    kMotorHoldSpeed: units.percent = 0.05
+    kMotorReleaseSpeed: units.percent = 1.0
+    kReleaseTimeout: units.seconds = 0.5
 
 class Services:
   class Localization:
@@ -226,10 +200,7 @@ class Sensors:
       kComType = AHRS.NavXComType.kUSB1
   
   class Binary:
-    class Intake:
-      kChannel = 9
-
-    class Gripper:
+    class Hand:
       kChannel = 7
 
   class Pose:
@@ -335,15 +306,12 @@ class Game:
       }                                                                                                                                           
 
       kTargetPositions: dict[TargetPositionType, TargetPosition] = {
-        TargetPositionType.ReefCoralL4: TargetPosition(ElevatorPosition(28.5, 28.0), 6.9, Position.Down), # 42.0
-        TargetPositionType.ReefCoralL3: TargetPosition(ElevatorPosition(4.2, 27.5), 6.0, Position.Down), # 43.4
-        TargetPositionType.ReefCoralL2: TargetPosition(ElevatorPosition(Value.min, 15.7), 4.25, Position.Down), # 47.8
-        TargetPositionType.ReefCoralL1: TargetPosition(ElevatorPosition(Value.min, 20.0), 23.0, Position.Up),
-        TargetPositionType.ReefAlgaeL3: TargetPosition(ElevatorPosition(8.0, 28.0), 18.5, Position.Up), # 15.0
-        TargetPositionType.ReefAlgaeL2: TargetPosition(ElevatorPosition(6.5, 19), 24.0, Position.Up), # 2.4
-        TargetPositionType.IntakeReady: TargetPosition(ElevatorPosition(18.0, Value.max), 45.0, Position.Down),  # -45.6
-        TargetPositionType.IntakeHandoff: TargetPosition(ElevatorPosition(11.0, Value.max), 45.0, Position.Down), # -45.6
-        TargetPositionType.IntakeLift: TargetPosition(ElevatorPosition(15.0, Value.max), 38.0, Position.Down), # -dc 28.2
-        TargetPositionType.CoralStation: TargetPosition(ElevatorPosition(Value.min, Value.min), Value.min, Position.Up),
-        TargetPositionType.CageDeepClimb: TargetPosition(ElevatorPosition(8.0, 29.0), Value.max, Position.Up)
+        TargetPositionType.ReefCoralL4: TargetPosition(ElevatorPosition(28.5, 28.0), 6.9, Value.min),
+        TargetPositionType.ReefCoralL3: TargetPosition(ElevatorPosition(4.2, 27.5), 6.0, Value.min),
+        TargetPositionType.ReefCoralL2: TargetPosition(ElevatorPosition(Value.min, 15.7), 4.25, Value.min),
+        TargetPositionType.ReefCoralL1: TargetPosition(ElevatorPosition(Value.min, 20.0), 23.0, Value.min),
+        TargetPositionType.ReefAlgaeL3: TargetPosition(ElevatorPosition(8.0, 28.0), 18.5, Value.min),
+        TargetPositionType.ReefAlgaeL2: TargetPosition(ElevatorPosition(6.5, 19), 24.0, Value.min),
+        TargetPositionType.IntakeReady: TargetPosition(ElevatorPosition(18.0, Value.max), 45.0, Value.min),
+        TargetPositionType.CoralStation: TargetPosition(ElevatorPosition(Value.min, Value.min), Value.min, Value.min)
       }

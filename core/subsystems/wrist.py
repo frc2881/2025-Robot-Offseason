@@ -1,8 +1,9 @@
+from typing import Callable
 from commands2 import Subsystem, Command, cmd
 from wpilib import SmartDashboard
-from rev import SparkMax, SparkBaseConfig, SparkBase
+from wpimath import units
 from lib import logger, utils
-from lib.classes import Position
+from lib.components.position_control_module import PositionControlModule
 import core.constants as constants
 
 class Wrist(Subsystem):
@@ -10,67 +11,38 @@ class Wrist(Subsystem):
     super().__init__()
     self._constants = constants.Subsystems.Wrist
 
-    self._targetPosition = Position.Unknown
+    self._hasInitialZeroReset: bool = False
 
-    self._motor = SparkMax(self._constants.kMotorCANId, SparkBase.MotorType.kBrushed)
-    self._sparkConfig = SparkBaseConfig()
-    self._sparkConfig.smartCurrentLimit(self._constants.kMotorCurrentLimit)
-    utils.setSparkConfig(
-      self._motor.configure(
-        self._sparkConfig,
-        SparkBase.ResetMode.kResetSafeParameters,
-        SparkBase.PersistMode.kPersistParameters
-      )
-    )
+    self._wrist = PositionControlModule(self._constants.kWristConfig)
     
   def periodic(self) -> None:
     self._updateTelemetry()
     
-  def setPosition(self, position: Position) -> Command:
-    return (
-      self.startEnd(
-        lambda: [
-          self._setTargetPosition(Position.Unknown),
-          self._motor.set(self._constants.kMotorUpSpeed if position == Position.Up else -self._constants.kMotorDownSpeed)
-        ],
-        lambda: None
-      )
-      .withTimeout(self._constants.kSetPositionTimeout)
-      .andThen(self.runOnce(lambda: self._setTargetPosition(position)))
-      .andThen(
-        self.startEnd(
-          lambda: self._motor.set(self._constants.kMotorHoldUpSpeed if position == Position.Up else -self._constants.kMotorHoldDownSpeed),
-          lambda: None
-        )
-      )
-      .finallyDo(lambda end: self._motor.stopMotor())
-      .withName("Wrist:SetPosition")
-    )
+  def setSpeed(self, getInput: Callable[[], units.percent]) -> Command:
+    return self.runEnd(
+      lambda: self._wrist.setSpeed(getInput() * self._constants.kInputLimit),
+      lambda: self.reset()
+    ).withName("Arm:SetSpeed")
 
-  def togglePosition(self) -> Command:
-    return cmd.either(
-      self.setPosition(Position.Up), 
-      self.setPosition(Position.Down), 
-      lambda: self._targetPosition != Position.Up
-    ).withName("Wrist:TogglePosition")
+  def setPosition(self, position: units.inches) -> Command:
+    return self.run(
+      lambda: self._wrist.setPosition(position)
+    ).withName("Wrist:SetPosition")
 
-  def refreshPosition(self) -> Command:
-    self.setPosition(self._targetPosition)
-
-  def getPosition(self) -> Position:
-    return self._targetPosition
-  
-  def _setTargetPosition(self, position: Position) -> None:
-    self._targetPosition = position
+  def getPosition(self) -> units.inches:
+    return self._wrist.getPosition()
 
   def isAtTargetPosition(self) -> bool:
-    return self._targetPosition != Position.Unknown
+    return self._wrist.isAtTargetPosition()
+
+  def resetToZero(self) -> Command:
+    return self._wrist.resetToZero(self).withName("Wrist:ResetToZero")
+
+  def hasZeroReset(self) -> bool:
+    return self._wrist.hasZeroReset()
 
   def reset(self) -> None:
-    self._motor.stopMotor()
-    self._setTargetPosition(Position.Unknown)
+    self._wrist.reset()
 
   def _updateTelemetry(self) -> None:
     SmartDashboard.putBoolean("Robot/Wrist/IsAtTargetPosition", self.isAtTargetPosition())
-    SmartDashboard.putString("Robot/Wrist/Position", self._targetPosition.name)
-    SmartDashboard.putNumber("Robot/Wrist/Current", self._motor.getOutputCurrent())
