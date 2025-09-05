@@ -45,6 +45,14 @@ class Hand(Subsystem):
     ).withTimeout(
       self._constants.kReleaseTimeout
     ).withName("Hand:Release")
+  
+  def scoreCoral(self) -> Command:
+    return self.startEnd(
+      lambda: self._motor.set(self._constants.kMotorReleaseSpeed),
+      lambda: self._motor.stopMotor()
+    ).withTimeout(
+      self._constants.kScoreCoralTimeout
+    ).withName("Hand:ScoreCoral")
 
   def isEnabled(self) -> bool:
     return self._motor.get() != 0

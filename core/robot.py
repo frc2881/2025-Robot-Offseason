@@ -84,10 +84,10 @@ class RobotCore:
   def _setupOperator(self) -> None:
     self.elevator.setDefaultCommand(self.elevator.setSpeed(self.operator.getLeftY))
     self.arm.setDefaultCommand(self.arm.setSpeed(self.operator.getRightY))
-    # self.operator.leftTrigger().whileTrue(cmd.none())
-    # self.operator.rightTrigger().whileTrue(cmd.none())
-    # self.operator.leftBumper().whileTrue(cmd.none())
-    # self.operator.rightBumper().whileTrue(cmd.none())
+    # self.operator.leftTrigger().whileTrue(cmd.none()) Hold intake
+    # self.operator.rightTrigger().whileTrue(cmd.none()) Intake algae from ground
+    self.operator.leftBumper().whileTrue(self.wrist.setSpeed(lambda: 0.2))
+    self.operator.rightBumper().whileTrue(self.wrist.setSpeed(lambda: -0.2))
     self.operator.povUp().and_((self.operator.start()).not_()).whileTrue(self.game.setRobotToTargetPosition(TargetPositionType.ReefCoralL4))
     self.operator.povRight().and_((self.operator.start()).not_()).whileTrue(self.game.setRobotToTargetPosition(TargetPositionType.ReefCoralL3))
     self.operator.povDown().and_((self.operator.start()).not_()).whileTrue(self.game.setRobotToTargetPosition(TargetPositionType.ReefCoralL2))
@@ -95,7 +95,7 @@ class RobotCore:
     self.operator.a().whileTrue(self.game.intakeCoralFromStation())
     self.operator.b().whileTrue(self.game.setRobotToTargetPosition(TargetPositionType.ReefAlgaeL2))
     self.operator.y().whileTrue(self.game.setRobotToTargetPosition(TargetPositionType.ReefAlgaeL3))
-    # self.operator.x().whileTrue(cmd.none())
+    self.operator.x().whileTrue(self.game.setRobotToTargetPosition(TargetPositionType.Barge))
     self.operator.start().and_(self.operator.povDown()).whileTrue(self.elevator.resetLowerStageToZero())
     self.operator.start().and_(self.operator.povUp()).whileTrue(self.elevator.resetUpperStageToZero())
     self.operator.start().and_(self.operator.povRight()).whileTrue(self.wrist.resetToZero())

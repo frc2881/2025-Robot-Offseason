@@ -84,12 +84,12 @@ class Subsystems:
 
     kTargetAlignmentConstants = TargetAlignmentConstants(
       translationPID = PID(5.0, 0, 0),
-      translationMaxVelocity = 1.0,
-      translationMaxAcceleration = 0.5,
+      translationMaxVelocity = 0.8,
+      translationMaxAcceleration = 0.4,
       translationTolerance = Tolerance(0.05, 0.1),
       rotationPID = PID(5.0, 0, 0), 
-      rotationMaxVelocity = 180.0,
-      rotationMaxAcceleration = 90.0,
+      rotationMaxVelocity = 360.0,
+      rotationMaxAcceleration = 180.0,
       rotationTolerance = Tolerance(0.5, 1.0),
       rotationHeadingModeOffset = 0,
       rotationTranslationModeOffset = 180.0
@@ -147,13 +147,13 @@ class Subsystems:
       motorCurrentLimit = 80,
       motorReduction = 1.0 / 1.0,
       motorPID = PID(0.1, 0, 0.07),
-      motorOutputRange = Range(-0.8, 0.6),
+      motorOutputRange = Range(-0.8, 0.4),
       motorMotionMaxVelocity = 15000.0,
       motorMotionMaxAcceleration = 30000.0,
       motorMotionVelocityFF = 1.0 / 6784,
       motorMotionAllowedClosedLoopError = 0.5,
-      motorSoftLimitForward = 70.75,
-      motorSoftLimitReverse = 0.5,
+      motorSoftLimitForward = 26.0,
+      motorSoftLimitReverse = 0.0,
       motorResetSpeed = 0.2
     ))
 
@@ -167,14 +167,14 @@ class Subsystems:
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 60,
       motorReduction = 1.0 / 1.0,
-      motorPID = PID(0.1, 0, 0),
-      motorOutputRange = Range(-0.8, 0.6),
+      motorPID = PID(0.0075, 0, 0.00075),
+      motorOutputRange = Range(-0.6, 0.8),
       motorMotionMaxVelocity = 15000.0,
       motorMotionMaxAcceleration = 30000.0,
       motorMotionVelocityFF = 1.0 / 6784,
       motorMotionAllowedClosedLoopError = 0.5,
-      motorSoftLimitForward = 1.0,
-      motorSoftLimitReverse = 0.5,
+      motorSoftLimitForward = 25.0,
+      motorSoftLimitReverse = 0.0,
       motorResetSpeed = 0.2
     ))
     
@@ -183,10 +183,12 @@ class Subsystems:
   class Hand:
     kMotorCANId: int = 14
     kMotorCurrentLimit: int = 40
-    kMotorIntakeSpeed: units.percent = 0.5
+    kMotorIntakeSpeed: units.percent = 0.3
     kMotorHoldSpeed: units.percent = 0.05
     kMotorReleaseSpeed: units.percent = 1.0
     kReleaseTimeout: units.seconds = 0.5
+    kMotorScoreCoralSpeed: units.percent = 1.0
+    kScoreCoralTimeout: units.seconds = 0.5
 
 class Services:
   class Localization:
@@ -293,10 +295,10 @@ class Game:
       kTargetAlignmentTransforms: dict[TargetType, dict[TargetAlignmentLocation, Transform3d]] = {
         TargetType.Reef: {
           TargetAlignmentLocation.Center: Transform3d(units.inchesToMeters(36), 0, 0, Rotation3d()),
-          TargetAlignmentLocation.Left: Transform3d(units.inchesToMeters(22.0), units.inchesToMeters(-6.5), 0, Rotation3d(Rotation2d.fromDegrees(0))),
-          TargetAlignmentLocation.Right: Transform3d(units.inchesToMeters(22.0), units.inchesToMeters(6.5), 0, Rotation3d(Rotation2d.fromDegrees(0))),
-          TargetAlignmentLocation.LeftL4: Transform3d(units.inchesToMeters(23.0), units.inchesToMeters(-6.5), 0, Rotation3d(Rotation2d.fromDegrees(0))),
-          TargetAlignmentLocation.RightL4: Transform3d(units.inchesToMeters(23.0), units.inchesToMeters(6.5), 0, Rotation3d(Rotation2d.fromDegrees(0))) 
+          TargetAlignmentLocation.Left: Transform3d(units.inchesToMeters(21.0), units.inchesToMeters(-6.5), 0, Rotation3d(Rotation2d.fromDegrees(0))),
+          TargetAlignmentLocation.Right: Transform3d(units.inchesToMeters(21.0), units.inchesToMeters(6.5), 0, Rotation3d(Rotation2d.fromDegrees(0))),
+          TargetAlignmentLocation.LeftL4: Transform3d(units.inchesToMeters(22.0), units.inchesToMeters(-6.5), 0, Rotation3d(Rotation2d.fromDegrees(0))),
+          TargetAlignmentLocation.RightL4: Transform3d(units.inchesToMeters(22.0), units.inchesToMeters(6.5), 0, Rotation3d(Rotation2d.fromDegrees(0))) 
         },
         TargetType.CoralStation: {
           TargetAlignmentLocation.Center: Transform3d(units.inchesToMeters(16.0), units.inchesToMeters(0.0), 0, Rotation3d(Rotation2d.fromDegrees(0))),
@@ -306,12 +308,16 @@ class Game:
       }                                                                                                                                           
 
       kTargetPositions: dict[TargetPositionType, TargetPosition] = {
-        TargetPositionType.ReefCoralL4: TargetPosition(ElevatorPosition(28.5, 28.0), 6.9, Value.min),
-        TargetPositionType.ReefCoralL3: TargetPosition(ElevatorPosition(4.2, 27.5), 6.0, Value.min),
-        TargetPositionType.ReefCoralL2: TargetPosition(ElevatorPosition(Value.min, 15.7), 4.25, Value.min),
-        TargetPositionType.ReefCoralL1: TargetPosition(ElevatorPosition(Value.min, 20.0), 23.0, Value.min),
-        TargetPositionType.ReefAlgaeL3: TargetPosition(ElevatorPosition(8.0, 28.0), 18.5, Value.min),
-        TargetPositionType.ReefAlgaeL2: TargetPosition(ElevatorPosition(6.5, 19), 24.0, Value.min),
-        TargetPositionType.IntakeReady: TargetPosition(ElevatorPosition(18.0, Value.max), 45.0, Value.min),
-        TargetPositionType.CoralStation: TargetPosition(ElevatorPosition(Value.min, Value.min), Value.min, Value.min)
+        TargetPositionType.ReefCoralL4: TargetPosition(ElevatorPosition(28.5, 28.0), 15.0, 25.0),
+        TargetPositionType.ReefCoralL3: TargetPosition(ElevatorPosition(4.2, 27.5), 6.0, 20.0),
+        TargetPositionType.ReefCoralL2: TargetPosition(ElevatorPosition(15.7, Value.min), 4.25, 20.0),
+        TargetPositionType.ReefCoralL1: TargetPosition(ElevatorPosition(20.0, Value.min), 23.0, 20.0),
+        TargetPositionType.ReefAlgaeL3: TargetPosition(ElevatorPosition(8.0, 28.0), 18.5, 13.0),
+        TargetPositionType.ReefAlgaeL2: TargetPosition(ElevatorPosition(6.5, 19), 24.0, 13.0),
+        TargetPositionType.IntakeCoral: TargetPosition(ElevatorPosition(Value.min, Value.min), 24.0, 13.0),
+        TargetPositionType.IntakeAlgae: TargetPosition(ElevatorPosition(Value.min, 5.0), 10.0, Value.min),
+        TargetPositionType.IntakeUp: TargetPosition(ElevatorPosition(Value.min, Value.min), 5.0, 20.0),
+        TargetPositionType.CoralStation: TargetPosition(ElevatorPosition(Value.min, Value.min), Value.min, 13.0),
+        TargetPositionType.Barge: TargetPosition(ElevatorPosition(Value.max, Value.max), Value.min, Value.min),
+        TargetPositionType.Processor: TargetPosition(ElevatorPosition(Value.min, Value.min), Value.min, Value.min)
       }

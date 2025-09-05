@@ -16,7 +16,11 @@ class TargetPositionType(Enum):
   ReefAlgaeL3 = auto()
   ReefAlgaeL2 = auto()
   CoralStation = auto()
-  IntakeReady = auto()
+  IntakeCoral = auto()
+  IntakeAlgae = auto()
+  IntakeUp = auto()
+  Barge = auto()
+  Processor = auto()
 
 class TargetAlignmentLocation(Enum):
   Center = auto()
