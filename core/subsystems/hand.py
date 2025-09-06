@@ -32,27 +32,31 @@ class Hand(Subsystem):
   def periodic(self) -> None:
     self._updateTelemetry()
       
-  def intake(self) -> Command:
+  def intakeCoral(self) -> Command:
     return self.runEnd(
-      lambda: self._motor.set(self._constants.kMotorIntakeSpeed if not self.isHolding() else self._constants.kMotorHoldSpeed),
+      lambda: self._motor.set(self._constants.kMotorIntakeCoralSpeed),
       lambda: self._motor.stopMotor()
-    ).withName("Hand:Intake")
-  
-  def release(self) -> Command:
-    return self.startEnd(
-      lambda: self._motor.set(-self._constants.kMotorReleaseSpeed),
-      lambda: self._motor.stopMotor()
-    ).withTimeout(
-      self._constants.kReleaseTimeout
-    ).withName("Hand:Release")
-  
+    ).withName("Hand:IntakeCoral")
+
   def scoreCoral(self) -> Command:
     return self.startEnd(
-      lambda: self._motor.set(self._constants.kMotorReleaseSpeed),
+      lambda: self._motor.set(self._constants.kMotorScoreCoralSpeed),
       lambda: self._motor.stopMotor()
     ).withTimeout(
       self._constants.kScoreCoralTimeout
     ).withName("Hand:ScoreCoral")
+  
+  def intakeAlgae(self) -> Command:
+    return self.runEnd(
+      lambda: self._motor.set(-self._constants.kMotorIntakeAlgaeSpeed),
+      lambda: self._motor.stopMotor()
+    ).withName("Hand:IntakeAlgae")
+  
+  def scoreAlgae(self) -> Command:
+    return self.runEnd(
+      lambda: self._motor.set(self._constants.kMotorScoreAlgaeSpeed),
+      lambda: self._motor.stopMotor()
+    ).withName("Hand:ScoreAlgae")
 
   def isEnabled(self) -> bool:
     return self._motor.get() != 0

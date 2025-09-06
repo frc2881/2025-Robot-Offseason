@@ -52,26 +52,22 @@ class Game:
     return cmd.parallel(
       self._robot.elevator.setPosition(constants.Game.Field.Targets.kTargetPositions[targetPositionType].elevator),
       self._robot.arm.setPosition(constants.Game.Field.Targets.kTargetPositions[targetPositionType].arm),
-      self._robot.wrist.setPosition(constants.Game.Field.Targets.kTargetPositions[targetPositionType].wrist),
+      cmd.waitSeconds(0.2).andThen(cmd.waitUntil(lambda: self._robot.elevator.isAtTargetPosition() and self._robot.arm.isAtTargetPosition()).andThen(self._robot.wrist.setPosition(constants.Game.Field.Targets.kTargetPositions[targetPositionType].wrist))),
       cmd.waitUntil(lambda: self.isRobotAtTargetPosition()).andThen(self.rumbleControllers(ControllerRumbleMode.Both))
     )
 
   def _setRobotToTargetPositionCoralStation(self):
     return cmd.parallel(
-      cmd.waitUntil(lambda: self._robot.arm.isAtCoralStationSafePosition()).andThen(
-        self._robot.elevator.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.CoralStation].elevator, isParallel = False)
-      ),
-      self._robot.arm.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.CoralStation].arm),
-      cmd.waitUntil(lambda: self._robot.arm.isAtCoralStationSafePosition()).andThen(
-        self._robot.wrist.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.CoralStation].wrist)
-      )
+      cmd.waitSeconds(0.2).andThen(cmd.waitUntil(lambda: self._robot.wrist.isAtTargetPosition()).andThen(self._robot.elevator.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.CoralStation].elevator, isParallel = False))),
+      cmd.waitSeconds(0.2).andThen(cmd.waitUntil(lambda: self._robot.wrist.isAtTargetPosition()).andThen(self._robot.arm.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.CoralStation].arm))),
+      self._robot.wrist.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.CoralStation].wrist)
     )
 
   def intakeCoralFromStation(self) -> Command:
     return (
       cmd.parallel(
         self._setRobotToTargetPositionCoralStation(),
-        self._robot.hand.intake(),
+        self._robot.hand.intakeCoral().until(lambda: self.isHandHolding()),
         cmd.waitUntil(lambda: self.isHandHolding()).andThen(self.rumbleControllers(ControllerRumbleMode.Both))
       )
       .withName("Game:IntakeCoralFromStation")
@@ -81,17 +77,17 @@ class Game:
     return (
       cmd.sequence(
         cmd.parallel(
-          self._robot.elevator.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.IntakeCoral].elevator),
-          self._robot.wrist.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.IntakeCoral].wrist),
+          self._robot.elevator.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.IntakeCoralDown].elevator),
+          self._robot.wrist.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.IntakeCoralDown].wrist),
           cmd.waitUntil(lambda: self._robot.wrist.isAtTargetPosition()).andThen(
-            self._robot.arm.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.IntakeCoral].arm)
+            self._robot.arm.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.IntakeCoralDown].arm)
           ),
-          self._robot.hand.intake()
+          self._robot.hand.intakeCoral()
         ).until(lambda: self.isHandHolding()),
         cmd.parallel(
-          self._robot.elevator.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.IntakeUp].elevator),
-          self._robot.arm.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.IntakeUp].arm),
-          self._robot.wrist.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.IntakeUp].wrist),
+          self._robot.elevator.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.IntakeCoralUp].elevator),
+          self._robot.arm.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.IntakeCoralUp].arm),
+          self._robot.wrist.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.IntakeCoralUp].wrist),
         )
       )
       .onlyIf(lambda: not self.isHandHolding())
@@ -104,13 +100,20 @@ class Game:
       .andThen(self.rumbleControllers(ControllerRumbleMode.Both))
       .withName("Game:ScoreCoral")
     )
-
-  def intake(self) -> Command:
-    return (
-      self._robot.hand.intake()
-      .withName("Game:Intake")
-    )
   
+  def intakeAlgae(self) -> Command:
+    return (
+      self._robot.hand.intakeAlgae()
+      .withName("Game:IntakeAlgae")
+    )
+
+  def scoreAlgae(self) -> Command:
+    return (
+      self._robot.hand.scoreAlgae()
+      .andThen(self.rumbleControllers(ControllerRumbleMode.Both))
+      .withName("Game:ScoreAlgae")
+    )
+
   def isHandHolding(self) -> bool:
     return self._robot.hand.isHolding()
 

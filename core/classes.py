@@ -16,9 +16,9 @@ class TargetPositionType(Enum):
   ReefAlgaeL3 = auto()
   ReefAlgaeL2 = auto()
   CoralStation = auto()
-  IntakeCoral = auto()
-  IntakeAlgae = auto()
-  IntakeUp = auto()
+  IntakeCoralDown = auto()
+  IntakeAlgaeDown = auto()
+  IntakeCoralUp = auto()
   Barge = auto()
   Processor = auto()
 

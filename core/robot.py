@@ -84,8 +84,8 @@ class RobotCore:
   def _setupOperator(self) -> None:
     self.elevator.setDefaultCommand(self.elevator.setSpeed(self.operator.getLeftY))
     self.arm.setDefaultCommand(self.arm.setSpeed(self.operator.getRightY))
-    # self.operator.leftTrigger().whileTrue(cmd.none()) Hold intake
-    # self.operator.rightTrigger().whileTrue(cmd.none()) Intake algae from ground
+    self.operator.leftTrigger().whileTrue(self.game.intakeAlgae())
+    self.operator.rightTrigger().whileTrue(self.game.scoreAlgae())
     self.operator.leftBumper().whileTrue(self.wrist.setSpeed(lambda: 0.2))
     self.operator.rightBumper().whileTrue(self.wrist.setSpeed(lambda: -0.2))
     self.operator.povUp().and_((self.operator.start()).not_()).whileTrue(self.game.setRobotToTargetPosition(TargetPositionType.ReefCoralL4))

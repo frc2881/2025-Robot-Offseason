@@ -34,10 +34,7 @@ class Arm(Subsystem):
 
   def isAtTargetPosition(self) -> bool:
     return self._arm.isAtTargetPosition()
-  
-  def isAtCoralStationSafePosition(self) -> bool:
-    return self._arm.getPosition() <= self._constants.kCoralStationSafePosition
-  
+
   def resetToZero(self) -> Command:
     return self._arm.resetToZero(self).withName("Arm:ResetToZero")
 
