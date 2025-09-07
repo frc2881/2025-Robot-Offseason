@@ -56,6 +56,8 @@ class Hand(Subsystem):
     return self.runEnd(
       lambda: self._motor.set(self._constants.kMotorScoreAlgaeSpeed),
       lambda: self._motor.stopMotor()
+    ).withTimeout(
+      self._constants.kScoreAlgaeTimeout
     ).withName("Hand:ScoreAlgae")
 
   def isEnabled(self) -> bool:

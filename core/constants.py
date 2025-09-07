@@ -187,7 +187,7 @@ class Subsystems:
     kScoreCoralTimeout: units.seconds = 0.5
     kMotorIntakeAlgaeSpeed: units.percent = 0.5
     kMotorScoreAlgaeSpeed: units.percent = 1.0
-    kScoreAlgaeTimeout: units.seconds = 0.5
+    kScoreAlgaeTimeout: units.seconds = 1.0
 
 class Services:
   class Localization:
