@@ -36,6 +36,8 @@ class Game:
         TargetPositionType.ReefCoralL1: self._setRobotToTargetPosition(TargetPositionType.ReefCoralL1),
         TargetPositionType.ReefAlgaeL3: self._setRobotToTargetPosition(TargetPositionType.ReefAlgaeL3),
         TargetPositionType.ReefAlgaeL2: self._setRobotToTargetPosition(TargetPositionType.ReefAlgaeL2),
+        TargetPositionType.IntakeAlgaeDown: self._setRobotToTargetPosition(TargetPositionType.IntakeAlgaeDown),
+        TargetPositionType.Barge: self._setRobotToTargetPosition(TargetPositionType.Barge),
         TargetPositionType.CoralStation: self._setRobotToTargetPositionCoralStation()
       }, lambda: targetPositionType)
       .withName(f'Game:AlignRobotToTargetPosition:{ targetPositionType.name }')
@@ -82,7 +84,7 @@ class Game:
           cmd.waitUntil(lambda: self._robot.wrist.isAtTargetPosition()).andThen(
             self._robot.arm.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.IntakeCoralDown].arm)
           ),
-          self._robot.hand.intakeCoral()
+          self._robot.hand.intakeCoralFromGround()
         ).until(lambda: self.isHandHolding()),
         cmd.parallel(
           self._robot.elevator.setPosition(constants.Game.Field.Targets.kTargetPositions[TargetPositionType.IntakeCoralUp].elevator),

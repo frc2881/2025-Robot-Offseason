@@ -37,6 +37,12 @@ class Hand(Subsystem):
       lambda: self._motor.set(self._constants.kMotorIntakeCoralSpeed),
       lambda: self._motor.stopMotor()
     ).withName("Hand:IntakeCoral")
+  
+  def intakeCoralFromGround(self) -> Command:
+    return self.runEnd(
+      lambda: self._motor.set(self._constants.kMotorIntakeCoralFromGroundSpeed),
+      lambda: self._motor.stopMotor()
+    ).withName("Hand:IntakeCoralFromGround")
 
   def scoreCoral(self) -> Command:
     return self.startEnd(

@@ -26,6 +26,8 @@ class AutoPath(Enum):
   Score_B_4R = auto()
   Move_2L_A = auto()
   Move_2R_B = auto()
+  Move_2L_2A = auto()
+  Score_BARGE = auto()
 
 class Auto:
   def __init__(
@@ -127,10 +129,12 @@ class Auto:
   def auto_2L(self) -> Command:
     return cmd.sequence(
       self._moveAlignScore(AutoPath.Start_2L_2L, TargetAlignmentLocation.Left),
-      cmd.sequence(
-        cmd.waitSeconds(2.0)
-        .andThen(self._move(AutoPath.Move_2L_A)))
-        .deadlineFor(self._robot.game.setRobotToTargetPosition(TargetPositionType.CoralStation))
+      self._move(AutoPath.Move_2L_2A).deadlineFor(self._robot.game.setRobotToTargetPosition(TargetPositionType.CoralStation)),
+      self._robot.game.setRobotToTargetPosition(TargetPositionType.ReefAlgaeL2).withTimeout(1.0),
+      self._alignToTarget(TargetAlignmentLocation.Center).andThen(cmd.waitSeconds(0.5)).andThen(
+        self._move(AutoPath.Score_BARGE).deadlineFor(cmd.waitSeconds(1.0).andThen(self._robot.game.setRobotToTargetPosition(TargetPositionType.Barge)))
+      ).deadlineFor(self._robot.game.intakeAlgae()),
+      self._robot.game.scoreAlgae()
     ).withName("Auto:[2L]")
 
   def auto_2R(self) -> Command:
