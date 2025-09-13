@@ -48,6 +48,11 @@ class Hand(Subsystem):
     return self.startEnd(
       lambda: self._motor.set(self._constants.kMotorScoreCoralSpeed),
       lambda: self._motor.stopMotor()
+    ).beforeStarting(
+      self.startEnd(
+        lambda: self._motor.set(-0.2),
+        lambda: self._motor.stopMotor()
+      ).withTimeout(0.08)
     ).withTimeout(
       self._constants.kScoreCoralTimeout
     ).withName("Hand:ScoreCoral")

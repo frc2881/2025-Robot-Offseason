@@ -313,7 +313,7 @@ class Game:
         TargetPositionType.ReefCoralL1: TargetPosition(ElevatorPosition(20.0, Value.min), 23.0, 75.0),
         TargetPositionType.ReefAlgaeL3: TargetPosition(ElevatorPosition(12.0, 28.0), 18.5, 33.0),
         TargetPositionType.ReefAlgaeL2: TargetPosition(ElevatorPosition(7.0, 20.0), 24.0, 39.0),
-        TargetPositionType.IntakeCoralDown: TargetPosition(ElevatorPosition(Value.min, 5.75), 28.75, 35.5),
+        TargetPositionType.IntakeCoralDown: TargetPosition(ElevatorPosition(Value.min, 3.0), 27.0, 36.5),
         TargetPositionType.IntakeCoralUp: TargetPosition(ElevatorPosition(Value.min, Value.min), 5.0, 60.0),
         TargetPositionType.IntakeAlgaeDown: TargetPosition(ElevatorPosition(Value.min, 6.0), 28.75, 36.0),
         TargetPositionType.CoralStation: TargetPosition(ElevatorPosition(Value.min, 10.25), Value.min, 32.5),
