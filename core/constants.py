@@ -127,7 +127,7 @@ class Subsystems:
       motorMotionMaxVelocity = 6500.0,
       motorMotionMaxAcceleration = 13000.0,
       motorMotionVelocityFF = 1.0 / 6784,
-      motorMotionAllowedClosedLoopError = 0.5,
+      motorMotionAllowedClosedLoopError = 0.25,
       motorSoftLimitForward = 28.75,
       motorSoftLimitReverse = 0.5,
       motorResetSpeed = 0.1
@@ -151,7 +151,7 @@ class Subsystems:
       motorMotionMaxVelocity = 15000.0,
       motorMotionMaxAcceleration = 30000.0,
       motorMotionVelocityFF = 1.0 / 6784,
-      motorMotionAllowedClosedLoopError = 0.5,
+      motorMotionAllowedClosedLoopError = 0.25,
       motorSoftLimitForward = 35.0,
       motorSoftLimitReverse = 1.0,
       motorResetSpeed = 0.4
@@ -171,7 +171,7 @@ class Subsystems:
       motorMotionMaxVelocity = 15000.0,
       motorMotionMaxAcceleration = 30000.0,
       motorMotionVelocityFF = 1.0 / 5820,
-      motorMotionAllowedClosedLoopError = 0.5,
+      motorMotionAllowedClosedLoopError = 0.25,
       motorSoftLimitForward = 75.0,
       motorSoftLimitReverse = 0.0,
       motorResetSpeed = 0.2
@@ -186,7 +186,7 @@ class Subsystems:
     kMotorIntakeCoralFromGroundSpeed: units.percent = 0.8
     kMotorScoreCoralSpeed: units.percent = 0.8
     kScoreCoralTimeout: units.seconds = 0.5
-    kMotorIntakeAlgaeSpeed: units.percent = 0.5
+    kMotorIntakeAlgaeSpeed: units.percent = 0.9
     kMotorScoreAlgaeSpeed: units.percent = 1.0
     kScoreAlgaeTimeout: units.seconds = 1.0
 
@@ -293,16 +293,16 @@ class Game:
 
       kTargetAlignmentTransforms: dict[TargetType, dict[TargetAlignmentLocation, Transform3d]] = {
         TargetType.Reef: {
-          TargetAlignmentLocation.Center: Transform3d(units.inchesToMeters(28.0), 0, 0, Rotation3d()),
-          TargetAlignmentLocation.Left: Transform3d(units.inchesToMeters(19.0), units.inchesToMeters(-6.5), 0, Rotation3d(Rotation2d.fromDegrees(-2.0))),
-          TargetAlignmentLocation.Right: Transform3d(units.inchesToMeters(19.0), units.inchesToMeters(6.5), 0, Rotation3d(Rotation2d.fromDegrees(-2.0))),
-          TargetAlignmentLocation.LeftL4: Transform3d(units.inchesToMeters(22.0), units.inchesToMeters(-6.5), 0, Rotation3d(Rotation2d.fromDegrees(-2.0))),
-          TargetAlignmentLocation.RightL4: Transform3d(units.inchesToMeters(22.0), units.inchesToMeters(6.5), 0, Rotation3d(Rotation2d.fromDegrees(-2.0))) 
+          TargetAlignmentLocation.Center: Transform3d(units.inchesToMeters(27.0), 0, 0, Rotation3d()),
+          TargetAlignmentLocation.Left: Transform3d(units.inchesToMeters(19.5), units.inchesToMeters(-6.5), 0, Rotation3d(Rotation2d.fromDegrees(-2.0))),
+          TargetAlignmentLocation.Right: Transform3d(units.inchesToMeters(19.5), units.inchesToMeters(6.5), 0, Rotation3d(Rotation2d.fromDegrees(-2.0))),
+          TargetAlignmentLocation.LeftL4: Transform3d(units.inchesToMeters(22.5), units.inchesToMeters(-6.5), 0, Rotation3d(Rotation2d.fromDegrees(-2.0))),
+          TargetAlignmentLocation.RightL4: Transform3d(units.inchesToMeters(22.5), units.inchesToMeters(6.5), 0, Rotation3d(Rotation2d.fromDegrees(-2.0))) 
         },
         TargetType.CoralStation: {
-          TargetAlignmentLocation.Center: Transform3d(units.inchesToMeters(18.0), units.inchesToMeters(0.0), 0, Rotation3d(Rotation2d.fromDegrees(-2.0))),
-          TargetAlignmentLocation.Left: Transform3d(units.inchesToMeters(18.0), units.inchesToMeters(-24.0), 0, Rotation3d(Rotation2d.fromDegrees(-2.0))),
-          TargetAlignmentLocation.Right: Transform3d(units.inchesToMeters(18.0), units.inchesToMeters(24.0), 0, Rotation3d(Rotation2d.fromDegrees(-2.0)))
+          TargetAlignmentLocation.Center: Transform3d(units.inchesToMeters(20.0), units.inchesToMeters(0.0), 0, Rotation3d(Rotation2d.fromDegrees(-2.0))),
+          TargetAlignmentLocation.Left: Transform3d(units.inchesToMeters(20.0), units.inchesToMeters(-24.0), 0, Rotation3d(Rotation2d.fromDegrees(-2.0))),
+          TargetAlignmentLocation.Right: Transform3d(units.inchesToMeters(20.0), units.inchesToMeters(24.0), 0, Rotation3d(Rotation2d.fromDegrees(-2.0)))
         }
       }                                                                                                                                           
 
@@ -313,7 +313,7 @@ class Game:
         TargetPositionType.ReefCoralL1: TargetPosition(ElevatorPosition(20.0, Value.min), 23.0, 75.0),
         TargetPositionType.ReefAlgaeL3: TargetPosition(ElevatorPosition(12.0, 28.0), 18.5, 33.0),
         TargetPositionType.ReefAlgaeL2: TargetPosition(ElevatorPosition(7.0, 20.0), 24.0, 39.0),
-        TargetPositionType.IntakeCoralDown: TargetPosition(ElevatorPosition(Value.min, 3.0), 27.0, 36.5),
+        TargetPositionType.IntakeCoralDown: TargetPosition(ElevatorPosition(Value.min, 2.5), 27.0, 36.5),
         TargetPositionType.IntakeCoralUp: TargetPosition(ElevatorPosition(Value.min, Value.min), 5.0, 60.0),
         TargetPositionType.IntakeAlgaeDown: TargetPosition(ElevatorPosition(Value.min, 6.0), 28.75, 36.0),
         TargetPositionType.CoralStation: TargetPosition(ElevatorPosition(Value.min, 10.25), Value.min, 32.5),
