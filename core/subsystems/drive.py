@@ -24,8 +24,8 @@ class Drive(Subsystem):
     
     self._constants = constants.Subsystems.Drive
 
-    self._swerveModules = tuple(SwerveModule(c) for c in self._constants.kSwerveModuleConfigs)
-    self._swerveModuleStatesPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SmartDashboard/Robot/Drive/Modules/States", SwerveModuleState).publish()
+    self._modules = tuple(SwerveModule(c) for c in self._constants.kSwerveModuleConfigs)
+    self._modulesStatesPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SmartDashboard/Robot/Drive/Modules/States", SwerveModuleState).publish()
 
     self._inputXFilter = SlewRateLimiter(self._constants.kInputRateLimitDemo)
     self._inputYFilter = SlewRateLimiter(self._constants.kInputRateLimitDemo)
@@ -128,15 +128,15 @@ class Drive(Subsystem):
     )
 
   def setChassisSpeeds(self, chassisSpeeds: ChassisSpeeds, driveFeedforwards: DriveFeedforwards = None) -> None:
-    self._setSwerveModuleStates(chassisSpeeds)
+    self._setModuleStates(chassisSpeeds)
 
   def getChassisSpeeds(self) -> ChassisSpeeds:
-    return self._constants.kDriveKinematics.toChassisSpeeds(self._getSwerveModuleStates())
+    return self._constants.kDriveKinematics.toChassisSpeeds(self._getModuleStates())
 
   def getModulePositions(self) -> tuple[SwerveModulePosition, ...]:
-    return tuple(m.getPosition() for m in self._swerveModules)
+    return tuple(m.getPosition() for m in self._modules)
 
-  def _setSwerveModuleStates(self, chassisSpeeds: ChassisSpeeds) -> None: 
+  def _setModuleStates(self, chassisSpeeds: ChassisSpeeds) -> None: 
     swerveModuleStates = SwerveDrive4Kinematics.desaturateWheelSpeeds(
       self._constants.kDriveKinematics.toSwerveModuleStates(
         ChassisSpeeds.discretize(
@@ -149,18 +149,18 @@ class Drive(Subsystem):
         )
       ), self._constants.kTranslationSpeedMax
     )
-    for i, m in enumerate(self._swerveModules):
+    for i, m in enumerate(self._modules):
       m.setTargetState(swerveModuleStates[i])
 
     if self._targetAlignmentState != State.Running:
       if chassisSpeeds.vx != 0 or chassisSpeeds.vy != 0:
         self._resetTargetAlignment()
 
-  def _getSwerveModuleStates(self) -> tuple[SwerveModuleState, ...]:
-    return tuple(m.getState() for m in self._swerveModules)
+  def _getModuleStates(self) -> tuple[SwerveModuleState, ...]:
+    return tuple(m.getState() for m in self._modules)
 
   def _setIdleMode(self, idleMode: MotorIdleMode) -> None:
-    for m in self._swerveModules: m.setIdleMode(idleMode)
+    for m in self._modules: m.setIdleMode(idleMode)
     SmartDashboard.putString("Robot/Drive/IdleMode/selected", idleMode.name)
 
   def lock(self) -> Command:
@@ -172,7 +172,7 @@ class Drive(Subsystem):
   def _setLockPosition(self, position: Position) -> None:
     self._lockPosition = position
     if position == Position.Locked:
-      for i, m in enumerate(self._swerveModules): 
+      for i, m in enumerate(self._modules): 
         m.setTargetState(SwerveModuleState(0, Rotation2d.fromDegrees(45 if i in { 0, 3 } else -45)))
 
   def alignToTarget(self, getRobotPose: Callable[[], Pose2d], getTargetPose: Callable[[], Pose3d], targetAlignmentMode: TargetAlignmentMode) -> Command:
@@ -212,12 +212,12 @@ class Drive(Subsystem):
         speedTranslationX = -self._targetAlignmentTranslationXController.calculate(targetTranslation.X())
       if not self._targetAlignmentTranslationYController.atGoal():
         speedTranslationY = -self._targetAlignmentTranslationYController.calculate(targetTranslation.Y())
-    self._setSwerveModuleStates(ChassisSpeeds(speedTranslationX, speedTranslationY, units.degreesToRadians(speedRotation)))
+    self._setModuleStates(ChassisSpeeds(speedTranslationX, speedTranslationY, units.degreesToRadians(speedRotation)))
     if speedRotation == 0 and speedTranslationX == 0 and speedTranslationY == 0:
       self._targetAlignmentState = State.Completed
 
   def _endTargetAlignment(self) -> None:
-    self._setSwerveModuleStates(ChassisSpeeds())
+    self._setModuleStates(ChassisSpeeds())
     if self._targetAlignmentState != State.Completed:
       self._targetAlignmentState = State.Stopped
 
@@ -236,4 +236,4 @@ class Drive(Subsystem):
     SmartDashboard.putBoolean("Robot/Drive/IsAlignedToTarget", self.isAlignedToTarget())
     SmartDashboard.putString("Robot/Drive/TargetAlignmentState", self._targetAlignmentState.name)
     SmartDashboard.putString("Robot/Drive/LockPosition", self._lockPosition.name)
-    self._swerveModuleStatesPublisher.set(self._getSwerveModuleStates())
+    self._modulesStatesPublisher.set(self._getModuleStates())
