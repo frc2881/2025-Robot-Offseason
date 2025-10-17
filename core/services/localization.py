@@ -16,18 +16,18 @@ class Localization():
   def __init__(
       self,
       getGyroRotation: Callable[[], Rotation2d],
-      getModulePositions: Callable[[], tuple[SwerveModulePosition, ...]],
+      getDriveModulePositions: Callable[[], tuple[SwerveModulePosition, ...]],
       poseSensors: tuple[PoseSensor, ...]
     ) -> None:
     super().__init__()
     self._getGyroRotation = getGyroRotation
-    self._getModulePositions = getModulePositions
+    self._getDriveModulePositions = getDriveModulePositions
     self._poseSensors = poseSensors
 
     self._poseEstimator = SwerveDrive4PoseEstimator(
       constants.Subsystems.Drive.kDriveKinematics,
       self._getGyroRotation(),
-      self._getModulePositions(),
+      self._getDriveModulePositions(),
       Pose2d()
     )
 
@@ -50,7 +50,7 @@ class Localization():
     self._updateTelemetry()
 
   def _updateRobotPose(self) -> None:
-    self._poseEstimator.update(self._getGyroRotation(), self._getModulePositions())
+    self._poseEstimator.update(self._getGyroRotation(), self._getDriveModulePositions())
     hasVisionTarget = False
     for poseSensor in self._poseSensors:
       estimatedRobotPose = poseSensor.getEstimatedRobotPose()
