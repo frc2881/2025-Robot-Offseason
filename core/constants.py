@@ -22,8 +22,8 @@ from lib.classes import (
   TargetAlignmentConstants,
   PoseSensorConstants,
   PoseSensorConfig,
-  PositionControlModuleConstants,
-  PositionControlModuleConfig
+  RelativePositionControlModuleConstants,
+  RelativePositionControlModuleConfig
 )
 from core.classes import (
   Target, 
@@ -96,7 +96,7 @@ class Subsystems:
     )
 
   class Elevator:
-    _lowerStageModuleConstants = PositionControlModuleConstants(
+    _lowerStageModuleConstants = RelativePositionControlModuleConstants(
       distancePerRotation = 0.5,
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
@@ -106,17 +106,16 @@ class Subsystems:
       motorOutputRange = Range(-0.9, 1.0),
       motorMotionMaxVelocity = 7000.0,
       motorMotionMaxAcceleration = 14000.0,
-      motorMotionVelocityFF = 1.0 / 6784,
       motorMotionAllowedClosedLoopError = 0.5,
       motorSoftLimitForward = 29.0,
       motorSoftLimitReverse = 0.5,
       motorResetSpeed = 0.2
     )
 
-    kLowerStageConfig = PositionControlModuleConfig("Elevator/LowerStage", 10, None, False, _lowerStageModuleConstants)
-    kLowerStageHelperConfig = PositionControlModuleConfig("Elevator/LowerStage2", 20, 10, True, _lowerStageModuleConstants)
+    kLowerStageConfig = RelativePositionControlModuleConfig("Elevator/LowerStage", 10, None, False, _lowerStageModuleConstants)
+    kLowerStageHelperConfig = RelativePositionControlModuleConfig("Elevator/LowerStage2", 20, 10, True, _lowerStageModuleConstants)
 
-    kUpperStageConfig = PositionControlModuleConfig("Elevator/UpperStage", 11, None, False, PositionControlModuleConstants(
+    kUpperStageConfig = RelativePositionControlModuleConfig("Elevator/UpperStage", 11, None, False, RelativePositionControlModuleConstants(
       distancePerRotation = 1.0,
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
@@ -126,7 +125,6 @@ class Subsystems:
       motorOutputRange = Range(-0.9, 1.0),
       motorMotionMaxVelocity = 6500.0,
       motorMotionMaxAcceleration = 13000.0,
-      motorMotionVelocityFF = 1.0 / 6784,
       motorMotionAllowedClosedLoopError = 0.25,
       motorSoftLimitForward = 28.75,
       motorSoftLimitReverse = 0.5,
@@ -140,7 +138,7 @@ class Subsystems:
     kInputLimit: units.percent = 0.5
 
   class Arm:
-    kArmConfig = PositionControlModuleConfig("Arm", 12, None, True, PositionControlModuleConstants(
+    kArmConfig = RelativePositionControlModuleConfig("Arm", 12, None, True, RelativePositionControlModuleConstants(
       distancePerRotation = 1.0,
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
@@ -150,7 +148,6 @@ class Subsystems:
       motorOutputRange = Range(-1.0, 0.3),
       motorMotionMaxVelocity = 15000.0,
       motorMotionMaxAcceleration = 30000.0,
-      motorMotionVelocityFF = 1.0 / 6784,
       motorMotionAllowedClosedLoopError = 0.25,
       motorSoftLimitForward = 35.0,
       motorSoftLimitReverse = 1.0,
@@ -160,7 +157,7 @@ class Subsystems:
     kInputLimit: units.percent = 1.0
 
   class Wrist:
-    kWristConfig = PositionControlModuleConfig("Wrist", 13, None, False, PositionControlModuleConstants(
+    kWristConfig = RelativePositionControlModuleConfig("Wrist", 13, None, False, RelativePositionControlModuleConstants(
       distancePerRotation = 1.0,
       motorControllerType = SparkLowLevel.SparkModel.kSparkMax,
       motorType = SparkLowLevel.MotorType.kBrushless,
@@ -170,7 +167,6 @@ class Subsystems:
       motorOutputRange = Range(-0.8, 1.0),
       motorMotionMaxVelocity = 15000.0,
       motorMotionMaxAcceleration = 30000.0,
-      motorMotionVelocityFF = 1.0 / 5820,
       motorMotionAllowedClosedLoopError = 0.25,
       motorSoftLimitForward = 75.0,
       motorSoftLimitReverse = 0.0,

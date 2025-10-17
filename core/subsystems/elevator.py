@@ -4,7 +4,7 @@ from wpilib import SmartDashboard
 from wpimath import units
 from lib import logger, utils
 from lib.classes import MotorDirection
-from lib.components.position_control_module import PositionControlModule
+from lib.components.relative_position_control_module import RelativePositionControlModule
 from core.classes import ElevatorPosition, ElevatorStage
 import core.constants as constants
 
@@ -15,9 +15,9 @@ class Elevator(Subsystem):
 
     self._hasInitialZeroReset: bool = False
 
-    self._lowerStage = PositionControlModule(self._constants.kLowerStageConfig)
-    self._lowerStageHelper = PositionControlModule(self._constants.kLowerStageHelperConfig)
-    self._upperStage = PositionControlModule(self._constants.kUpperStageConfig)
+    self._lowerStage = RelativePositionControlModule(self._constants.kLowerStageConfig)
+    self._lowerStageHelper = RelativePositionControlModule(self._constants.kLowerStageHelperConfig)
+    self._upperStage = RelativePositionControlModule(self._constants.kUpperStageConfig)
 
   def periodic(self) -> None:
     self._updateTelemetry()

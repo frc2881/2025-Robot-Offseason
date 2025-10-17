@@ -3,7 +3,7 @@ from commands2 import Subsystem, Command
 from wpilib import SmartDashboard
 from wpimath import units
 from lib import logger, utils
-from lib.components.position_control_module import PositionControlModule
+from lib.components.relative_position_control_module import RelativePositionControlModule
 import core.constants as constants
 
 class Arm(Subsystem):
@@ -13,7 +13,7 @@ class Arm(Subsystem):
 
     self._hasInitialZeroReset: bool = False
 
-    self._arm = PositionControlModule(self._constants.kArmConfig)
+    self._arm = RelativePositionControlModule(self._constants.kArmConfig)
 
   def periodic(self) -> None:
     self._updateTelemetry()

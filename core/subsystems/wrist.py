@@ -3,7 +3,7 @@ from commands2 import Subsystem, Command, cmd
 from wpilib import SmartDashboard
 from wpimath import units
 from lib import logger, utils
-from lib.components.position_control_module import PositionControlModule
+from lib.components.relative_position_control_module import RelativePositionControlModule
 import core.constants as constants
 
 class Wrist(Subsystem):
@@ -13,7 +13,7 @@ class Wrist(Subsystem):
 
     self._hasInitialZeroReset: bool = False
 
-    self._wrist = PositionControlModule(self._constants.kWristConfig)
+    self._wrist = RelativePositionControlModule(self._constants.kWristConfig)
     
   def periodic(self) -> None:
     self._updateTelemetry()
