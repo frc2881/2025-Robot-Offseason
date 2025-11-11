@@ -8,13 +8,13 @@ from core.classes import LightsMode
 class Lights():
   def __init__(
       self,
-      hasAllZeroResets: Callable[[], bool],
+      isHomed: Callable[[], bool],
       hasValidVisionTarget: Callable[[], bool],
       isRobotAlignedForScoring: Callable[[], bool],
       isHandHolding: Callable[[], bool]
     ) -> None:
     super().__init__()
-    self._hasAllZeroResets = hasAllZeroResets
+    self._isHomed = isHomed
     self._hasValidVisionTarget = hasValidVisionTarget
     self._isHandHolding = isHandHolding
     self._isRobotAlignedForScoring = isRobotAlignedForScoring
@@ -32,8 +32,8 @@ class Lights():
       return
     
     if utils.getRobotState() == RobotState.Disabled:
-      if not utils.isCompetitionMode() and not self._hasAllZeroResets():
-        self._lightsController.setMode(LightsMode.RobotNotReset)
+      if not utils.isCompetitionMode() and not self._isHomed():
+        self._lightsController.setMode(LightsMode.RobotNotHomed)
         return
       if utils.isCompetitionMode() and not self._hasValidVisionTarget():
         self._lightsController.setMode(LightsMode.VisionNotReady)

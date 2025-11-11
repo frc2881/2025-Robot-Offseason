@@ -5,6 +5,7 @@ from wpimath import units
 from lib import logger, utils
 from lib.classes import MotorDirection
 from lib.components.relative_position_control_module import RelativePositionControlModule
+from lib.components.follower_module import FollowerModule
 from core.classes import ElevatorPosition, ElevatorStage
 import core.constants as constants
 
@@ -16,7 +17,7 @@ class Elevator(Subsystem):
     self._hasInitialZeroReset: bool = False
 
     self._lowerStage = RelativePositionControlModule(self._constants.kLowerStageConfig)
-    self._lowerStageHelper = RelativePositionControlModule(self._constants.kLowerStageHelperConfig)
+    self._lowerStageFollower = FollowerModule(self._constants.kLowerStageFollowerConfig)
     self._upperStage = RelativePositionControlModule(self._constants.kUpperStageConfig)
 
   def periodic(self) -> None:
@@ -70,14 +71,14 @@ class Elevator(Subsystem):
   def setUpperStageSoftLimitsEnabled(self, isEnabled: bool) -> None:
     self._upperStage.setSoftLimitsEnabled(isEnabled)
 
-  def resetLowerStageToZero(self) -> Command:
-    return self._lowerStage.resetToZero(self).withName("Elevator:ResetLowerStageToZero")
+  def resetLowerStageToHome(self) -> Command:
+    return self._lowerStage.resetToHome(self).withName("Elevator:ResetLowerStageToHome")
 
-  def resetUpperStageToZero(self) -> Command:
-    return self._upperStage.resetToZero(self).withName("Elevator:ResetUpperStageToZero")
+  def resetUpperStageToHome(self) -> Command:
+    return self._upperStage.resetToHome(self).withName("Elevator:ResetUpperStageToHome")
   
-  def hasZeroReset(self) -> bool:
-    return self._lowerStage.hasZeroReset() and self._upperStage.hasZeroReset()
+  def isHomed(self) -> bool:
+    return self._lowerStage.isHomed() and self._upperStage.isHomed()
   
   def reset(self) -> None:
     self._lowerStage.reset()

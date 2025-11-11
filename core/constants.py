@@ -23,7 +23,10 @@ from lib.classes import (
   PoseSensorConstants,
   PoseSensorConfig,
   RelativePositionControlModuleConstants,
-  RelativePositionControlModuleConfig
+  RelativePositionControlModuleConfig,
+  FollowerModuleConstants,
+  FollowerModuleConfig,
+  BinarySensorConfig
 )
 from core.classes import (
   Target, 
@@ -96,8 +99,7 @@ class Subsystems:
     )
 
   class Elevator:
-    _lowerStageModuleConstants = RelativePositionControlModuleConstants(
-      distancePerRotation = 0.5,
+    kLowerStageConfig = RelativePositionControlModuleConfig("Elevator/LowerStage", 10, False, RelativePositionControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 120,
@@ -109,14 +111,16 @@ class Subsystems:
       motorMotionAllowedClosedLoopError = 0.5,
       motorSoftLimitForward = 29.0,
       motorSoftLimitReverse = 0.5,
-      motorResetSpeed = 0.2
-    )
+      motorResetSpeed = 0.2,
+      distancePerRotation = 0.5
+    ))
+    kLowerStageFollowerConfig = FollowerModuleConfig("Elevator/LowerStageFollower", 20, 10, True, FollowerModuleConstants(
+      motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
+      motorType = SparkLowLevel.MotorType.kBrushless,
+      motorCurrentLimit = 120
+    ))
 
-    kLowerStageConfig = RelativePositionControlModuleConfig("Elevator/LowerStage", 10, None, False, _lowerStageModuleConstants)
-    kLowerStageHelperConfig = RelativePositionControlModuleConfig("Elevator/LowerStage2", 20, 10, True, _lowerStageModuleConstants)
-
-    kUpperStageConfig = RelativePositionControlModuleConfig("Elevator/UpperStage", 11, None, False, RelativePositionControlModuleConstants(
-      distancePerRotation = 1.0,
+    kUpperStageConfig = RelativePositionControlModuleConfig("Elevator/UpperStage", 11, False, RelativePositionControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 80,
@@ -128,7 +132,8 @@ class Subsystems:
       motorMotionAllowedClosedLoopError = 0.25,
       motorSoftLimitForward = 28.75,
       motorSoftLimitReverse = 0.5,
-      motorResetSpeed = 0.1
+      motorResetSpeed = 0.1,
+      distancePerRotation = 1.0
     ))
 
     kLowerStageSoftLimitBuffer: units.inches = 1.5
@@ -138,8 +143,7 @@ class Subsystems:
     kInputLimit: units.percent = 0.5
 
   class Arm:
-    kArmConfig = RelativePositionControlModuleConfig("Arm", 12, None, True, RelativePositionControlModuleConstants(
-      distancePerRotation = 1.0,
+    kArmConfig = RelativePositionControlModuleConfig("Arm", 12, True, RelativePositionControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkFlex,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 80,
@@ -151,14 +155,14 @@ class Subsystems:
       motorMotionAllowedClosedLoopError = 0.25,
       motorSoftLimitForward = 35.0,
       motorSoftLimitReverse = 1.0,
-      motorResetSpeed = 0.4
+      motorResetSpeed = 0.4,
+      distancePerRotation = 1.0
     ))
 
     kInputLimit: units.percent = 1.0
 
   class Wrist:
-    kWristConfig = RelativePositionControlModuleConfig("Wrist", 13, None, False, RelativePositionControlModuleConstants(
-      distancePerRotation = 1.0,
+    kWristConfig = RelativePositionControlModuleConfig("Wrist", 13, False, RelativePositionControlModuleConstants(
       motorControllerType = SparkLowLevel.SparkModel.kSparkMax,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 30,
@@ -170,7 +174,8 @@ class Subsystems:
       motorMotionAllowedClosedLoopError = 0.25,
       motorSoftLimitForward = 75.0,
       motorSoftLimitReverse = 0.0,
-      motorResetSpeed = 0.2
+      motorResetSpeed = 0.2,
+      distancePerRotation = 1.0
     ))
     
     kInputLimit: units.percent = 0.6
@@ -199,7 +204,7 @@ class Sensors:
   
   class Binary:
     class Hand:
-      kChannel = 7
+      kSensorConfig = BinarySensorConfig("Hand", 7)
 
   class Pose:
     _poseSensorConstants = PoseSensorConstants(

@@ -33,7 +33,7 @@ class RobotCore:
     self.gyro = Gyro_NAVX2(constants.Sensors.Gyro.NAVX2.kComType)
     self.poseSensors = tuple(PoseSensor(c) for c in constants.Sensors.Pose.kPoseSensorConfigs)
     SmartDashboard.putString("Robot/Sensors/Camera/Streams", utils.toJson(constants.Sensors.Camera.kStreams))
-    self.handSensor = BinarySensor("Hand", constants.Sensors.Binary.Hand.kChannel) 
+    self.handSensor = BinarySensor(constants.Sensors.Binary.Hand.kSensorConfig)
     
   def _initSubsystems(self) -> None:
     self.drive = Drive(self.gyro.getHeading)
@@ -96,10 +96,10 @@ class RobotCore:
     self.operator.b().whileTrue(self.game.setRobotToTargetPosition(TargetPositionType.ReefAlgaeL2))
     self.operator.y().whileTrue(self.game.setRobotToTargetPosition(TargetPositionType.ReefAlgaeL3))
     self.operator.x().whileTrue(self.game.setRobotToTargetPosition(TargetPositionType.IntakeAlgaeDown))
-    self.operator.start().and_(self.operator.povDown()).whileTrue(self.elevator.resetLowerStageToZero())
-    self.operator.start().and_(self.operator.povUp()).whileTrue(self.elevator.resetUpperStageToZero())
-    self.operator.start().and_(self.operator.povRight()).whileTrue(self.wrist.resetToZero())
-    self.operator.start().and_(self.operator.povLeft()).whileTrue(self.arm.resetToZero())
+    self.operator.start().and_(self.operator.povDown()).whileTrue(self.elevator.resetLowerStageToHome())
+    self.operator.start().and_(self.operator.povUp()).whileTrue(self.elevator.resetUpperStageToHome())
+    self.operator.start().and_(self.operator.povRight()).whileTrue(self.wrist.resetToHome())
+    self.operator.start().and_(self.operator.povLeft()).whileTrue(self.arm.resetToHome())
     self.operator.start().and_((
         self.operator.povLeft()
         .or_(self.operator.povUp())
@@ -111,7 +111,7 @@ class RobotCore:
 
   def _initLights(self) -> None:
     self.lights = Lights(
-      self._hasAllZeroResets,
+      self._isHomed,
       self.localization.hasValidVisionTarget,
       self.game.isRobotReadyForScoring,
       self.game.isHandHolding
@@ -145,12 +145,12 @@ class RobotCore:
     self.wrist.reset()
     self.hand.reset()
 
-  def _hasAllZeroResets(self) -> bool:
+  def _isHomed(self) -> bool:
     return (
-      self.elevator.hasZeroReset() and self.arm.hasZeroReset() 
+      self.elevator.isHomed() and self.arm.iHomed() and self.wrist.isHomed()
       if not utils.isCompetitionMode() else 
       True
     )
       
   def _updateTelemetry(self) -> None:
-    SmartDashboard.putBoolean("Robot/Status/HasAllZeroResets", self._hasAllZeroResets())
+    SmartDashboard.putBoolean("Robot/Status/IsHomed", self._isHomed())

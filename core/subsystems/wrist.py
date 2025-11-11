@@ -35,11 +35,11 @@ class Wrist(Subsystem):
   def isAtTargetPosition(self) -> bool:
     return self._wrist.isAtTargetPosition()
 
-  def resetToZero(self) -> Command:
-    return self._wrist.resetToZero(self).withName("Wrist:ResetToZero")
+  def resetToHome(self) -> Command:
+    return self._wrist.resetToHome(self).withName("Wrist:ResetToHome")
 
-  def hasZeroReset(self) -> bool:
-    return self._wrist.hasZeroReset()
+  def isHomed(self) -> bool:
+    return self._wrist.isHomed()
 
   def reset(self) -> None:
     self._wrist.reset()

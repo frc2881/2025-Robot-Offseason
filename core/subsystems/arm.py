@@ -35,11 +35,11 @@ class Arm(Subsystem):
   def isAtTargetPosition(self) -> bool:
     return self._arm.isAtTargetPosition()
 
-  def resetToZero(self) -> Command:
-    return self._arm.resetToZero(self).withName("Arm:ResetToZero")
+  def resetToHome(self) -> Command:
+    return self._arm.resetToHome(self).withName("Arm:ResetToHome")
 
-  def hasZeroReset(self) -> bool:
-    return self._arm.hasZeroReset()
+  def iHomed(self) -> bool:
+    return self._arm.isHomed()
 
   def reset(self) -> None:
     self._arm.reset()
