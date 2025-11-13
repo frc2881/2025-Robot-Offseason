@@ -20,7 +20,7 @@
     {
       "label": "RobotPy Project: Init/Update Robot-Lib",
       "type": "shell",
-      "command": "git submodule update --init", 
+      "command": "python ./scripts/update.py", 
       "problemMatcher": [],
     },
     {

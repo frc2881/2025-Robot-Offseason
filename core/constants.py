@@ -1,13 +1,13 @@
+import wpilib
 from wpimath import units
 from wpimath.geometry import Transform3d, Translation3d, Rotation3d, Translation2d, Rotation2d
 from wpimath.kinematics import SwerveDrive4Kinematics
-import wpilib
 from robotpy_apriltag import AprilTagFieldLayout
 from navx import AHRS
+from rev import SparkLowLevel
 from pathplannerlib.config import RobotConfig
 from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants
 from photonlibpy.photonPoseEstimator import PoseStrategy
-from rev import SparkLowLevel
 from lib import logger, utils
 from lib.classes import (
   Alliance, 

@@ -1,5 +1,4 @@
 from typing import Callable
-from ntcore import NetworkTableInstance
 from commands2 import Subsystem, Command
 from wpilib import SmartDashboard, SendableChooser
 from wpimath import units
@@ -8,6 +7,7 @@ from wpimath.trajectory import TrapezoidProfile
 from wpimath.filter import SlewRateLimiter
 from wpimath.geometry import Rotation2d, Pose2d, Pose3d
 from wpimath.kinematics import ChassisSpeeds, SwerveModulePosition, SwerveModuleState, SwerveDrive4Kinematics
+from ntcore import NetworkTableInstance
 from pathplannerlib.util import DriveFeedforwards
 from lib import logger, utils
 from lib.classes import State, Position, MotorIdleMode, SpeedMode, DriveOrientation, TargetAlignmentMode
