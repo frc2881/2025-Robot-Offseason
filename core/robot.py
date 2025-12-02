@@ -32,6 +32,7 @@ class RobotCore:
   def _initSensors(self) -> None:
     self.gyro = Gyro_NAVX2(constants.Sensors.Gyro.NAVX2.kComType)
     self.poseSensors = tuple(PoseSensor(c) for c in constants.Sensors.Pose.kPoseSensorConfigs)
+    SmartDashboard.putStringArray("Robot/Sensors/Pose/Names", tuple(c.name for c in constants.Sensors.Pose.kPoseSensorConfigs))
     self.handSensor = BinarySensor(constants.Sensors.Binary.Hand.kSensorConfig)
     
   def _initSubsystems(self) -> None:
