@@ -213,6 +213,45 @@ class Sensors:
       fallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY
     )
 
+    kPoseSensorConfigs: tuple[PoseSensorConfig, ...] = (
+      PoseSensorConfig(
+        cameraName = "FrontLeft",
+        cameraTransform = Transform3d(
+          Translation3d(units.inchesToMeters(-4.5972), units.inchesToMeters(8.125), units.inchesToMeters(39.3044)),
+          Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-30.0), units.degreesToRadians(1.0))
+        ), 
+        stream = "http://10.28.81.7:1182/?action=stream", 
+        constants = _poseSensorConstants
+      ),
+      PoseSensorConfig(
+        cameraName = "FrontRight",
+        cameraTransform = Transform3d(
+          Translation3d(units.inchesToMeters(-4.1391), units.inchesToMeters(-8.125), units.inchesToMeters(38.3683)),
+          Rotation3d(units.degreesToRadians(0), units.degreesToRadians(32.0), units.degreesToRadians(0))
+        ), 
+        stream = "http://10.28.81.6:1184/?action=stream", 
+        constants = _poseSensorConstants
+      ),
+      PoseSensorConfig(
+        cameraName = "RearLeft",
+        cameraTransform = Transform3d(
+          Translation3d(units.inchesToMeters(-8.8236), units.inchesToMeters(7.2958), units.inchesToMeters(36.55)),
+          Rotation3d(units.degreesToRadians(0), units.degreesToRadians(19.3), units.degreesToRadians(165.0))
+        ), 
+        stream = "http://10.28.81.7:1186/?action=stream", 
+        constants = _poseSensorConstants
+      ),
+      PoseSensorConfig(
+        cameraName = "RearRight",
+        cameraTransform = Transform3d(
+          Translation3d(units.inchesToMeters(-8.8236), units.inchesToMeters(-7.2958), units.inchesToMeters(36.55)),
+          Rotation3d(units.degreesToRadians(0), units.degreesToRadians(19.8), units.degreesToRadians(-165.5))
+        ), 
+        stream = "http://10.28.81.6:1182/?action=stream", 
+        constants = _poseSensorConstants
+      )
+    )
+
     # # DEBUG: use for empirical calculation of robot to camera transform for each pose sensor configuration using fixed target measured from robot and targetPose averages from PhotonVision
     # robotToCamera = utils.getRobotToCameraTransform(
     #   targetToRobot = Transform3d(Translation3d(0.860, 0, -0.311), Rotation3d().fromDegrees(0, 0, -180.0)),
@@ -220,45 +259,8 @@ class Sensors:
     # )
     # logger.debug(robotToCamera)
 
-    kPoseSensorConfigs: tuple[PoseSensorConfig, ...] = (
-      PoseSensorConfig(
-        "FrontLeft",
-        Transform3d(
-          Translation3d(units.inchesToMeters(-4.5972), units.inchesToMeters(8.125), units.inchesToMeters(39.3044)),
-          Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-30.0), units.degreesToRadians(1.0))
-        ), _poseSensorConstants
-      ),
-      PoseSensorConfig(
-        "FrontRight",
-        Transform3d(
-          Translation3d(units.inchesToMeters(-4.1391), units.inchesToMeters(-8.125), units.inchesToMeters(38.3683)),
-          Rotation3d(units.degreesToRadians(0), units.degreesToRadians(32.0), units.degreesToRadians(0))
-        ), _poseSensorConstants
-      ),
-      PoseSensorConfig(
-        "RearLeft",
-        Transform3d(
-          Translation3d(units.inchesToMeters(-8.8236), units.inchesToMeters(7.2958), units.inchesToMeters(36.55)),
-          Rotation3d(units.degreesToRadians(0), units.degreesToRadians(19.3), units.degreesToRadians(165.0))
-        ), _poseSensorConstants
-      ),
-      PoseSensorConfig(
-        "RearRight",
-        Transform3d(
-          Translation3d(units.inchesToMeters(-8.8236), units.inchesToMeters(-7.2958), units.inchesToMeters(36.55)),
-          Rotation3d(units.degreesToRadians(0), units.degreesToRadians(19.8), units.degreesToRadians(-165.5))
-        ), _poseSensorConstants
-      )
-    )
-
-  class Camera:
-    kStreams: dict[str, str] = {
-      "FrontRight": "http://10.28.81.6:1184/?action=stream",
-      "FrontLeft": "http://10.28.81.7:1182/?action=stream",
-      "RearRight": "http://10.28.81.6:1182/?action=stream",
-      "RearLeft": "http://10.28.81.7:1186/?action=stream",
-      "Driver": "http://10.28.81.6:1184/?action=stream"
-    }
+class Cameras:
+  kDriverStream = "http://10.28.81.6:1184/?action=stream"
 
 class Controllers:
   kDriverControllerPort: int = 0

@@ -32,7 +32,6 @@ class RobotCore:
   def _initSensors(self) -> None:
     self.gyro = Gyro_NAVX2(constants.Sensors.Gyro.NAVX2.kComType)
     self.poseSensors = tuple(PoseSensor(c) for c in constants.Sensors.Pose.kPoseSensorConfigs)
-    SmartDashboard.putString("Robot/Sensors/Camera/Streams", utils.toJson(constants.Sensors.Camera.kStreams))
     self.handSensor = BinarySensor(constants.Sensors.Binary.Hand.kSensorConfig)
     
   def _initSubsystems(self) -> None:
@@ -48,6 +47,7 @@ class RobotCore:
       self.drive.getModulePositions, 
       self.poseSensors
     )
+    SmartDashboard.putString("Robot/Cameras/Driver", constants.Cameras.kDriverStream)
 
   def _initControllers(self) -> None:
     self.driver = Xbox(constants.Controllers.kDriverControllerPort, constants.Controllers.kInputDeadband)
