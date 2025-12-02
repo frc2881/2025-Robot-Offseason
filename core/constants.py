@@ -215,8 +215,8 @@ class Sensors:
 
     kPoseSensorConfigs: tuple[PoseSensorConfig, ...] = (
       PoseSensorConfig(
-        cameraName = "FrontLeft",
-        cameraTransform = Transform3d(
+        name = "FrontLeft",
+        transform = Transform3d(
           Translation3d(units.inchesToMeters(-4.5972), units.inchesToMeters(8.125), units.inchesToMeters(39.3044)),
           Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-30.0), units.degreesToRadians(1.0))
         ), 
@@ -224,8 +224,8 @@ class Sensors:
         constants = _poseSensorConstants
       ),
       PoseSensorConfig(
-        cameraName = "FrontRight",
-        cameraTransform = Transform3d(
+        name = "FrontRight",
+        transform = Transform3d(
           Translation3d(units.inchesToMeters(-4.1391), units.inchesToMeters(-8.125), units.inchesToMeters(38.3683)),
           Rotation3d(units.degreesToRadians(0), units.degreesToRadians(32.0), units.degreesToRadians(0))
         ), 
@@ -233,8 +233,8 @@ class Sensors:
         constants = _poseSensorConstants
       ),
       PoseSensorConfig(
-        cameraName = "RearLeft",
-        cameraTransform = Transform3d(
+        name = "RearLeft",
+        transform = Transform3d(
           Translation3d(units.inchesToMeters(-8.8236), units.inchesToMeters(7.2958), units.inchesToMeters(36.55)),
           Rotation3d(units.degreesToRadians(0), units.degreesToRadians(19.3), units.degreesToRadians(165.0))
         ), 
@@ -242,8 +242,8 @@ class Sensors:
         constants = _poseSensorConstants
       ),
       PoseSensorConfig(
-        cameraName = "RearRight",
-        cameraTransform = Transform3d(
+        name = "RearRight",
+        transform = Transform3d(
           Translation3d(units.inchesToMeters(-8.8236), units.inchesToMeters(-7.2958), units.inchesToMeters(36.55)),
           Rotation3d(units.degreesToRadians(0), units.degreesToRadians(19.8), units.degreesToRadians(-165.5))
         ), 
