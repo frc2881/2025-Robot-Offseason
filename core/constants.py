@@ -252,13 +252,6 @@ class Sensors:
       )
     )
 
-    # # DEBUG: use for empirical calculation of robot to camera transform for each pose sensor configuration using fixed target measured from robot and targetPose averages from PhotonVision
-    # robotToCamera = utils.getRobotToCameraTransform(
-    #   targetToRobot = Transform3d(Translation3d(0.860, 0, -0.311), Rotation3d().fromDegrees(0, 0, -180.0)),
-    #   targetToCamera = Transform3d(Translation3d(.707, .041, -0.089), Rotation3d(Quaternion(-0.01, -0.09, 0.0, -0.99)))
-    # )
-    # logger.debug(robotToCamera)
-
 class Cameras:
   kDriverStream = "http://10.28.81.6:1184/?action=stream"
 
