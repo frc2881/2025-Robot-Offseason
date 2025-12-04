@@ -31,9 +31,9 @@ class RobotCore:
     utils.addRobotPeriodic(self._periodic)
 
   def _initSensors(self) -> None:
-    self.gyro = Gyro_NAVX2(constants.Sensors.Gyro.NAVX2.kComType)
-    self.poseSensors = tuple(PoseSensor(c) for c in constants.Sensors.Pose.kPoseSensorConfigs)
-    self.handSensor = BinarySensor(constants.Sensors.Binary.Hand.kSensorConfig)
+    self.gyro = Gyro_NAVX2(constants.Sensors.Gyro.NAVX2.COM_TYPE)
+    self.poseSensors = tuple(PoseSensor(c) for c in constants.Sensors.Pose.POSE_SENSOR_CONFIGS)
+    self.handSensor = BinarySensor(constants.Sensors.Binary.Hand.SENSOR_CONFIG)
     
   def _initSubsystems(self) -> None:
     self.drive = Drive(self.gyro.getHeading)
@@ -50,8 +50,8 @@ class RobotCore:
     )
 
   def _initControllers(self) -> None:
-    self.driver = Xbox(constants.Controllers.kDriverControllerPort, constants.Controllers.kInputDeadband)
-    self.operator = Xbox(constants.Controllers.kOperatorControllerPort, constants.Controllers.kInputDeadband)
+    self.driver = Xbox(constants.Controllers.DRIVER_CONTROLLER_PORT, constants.Controllers.INPUT_DEADBAND)
+    self.operator = Xbox(constants.Controllers.OPERATOR_CONTROLLER_PORT, constants.Controllers.INPUT_DEADBAND)
     DriverStation.silenceJoystickConnectionWarning(not utils.isCompetitionMode())
 
   def _initCommands(self) -> None:
@@ -118,12 +118,12 @@ class RobotCore:
     )
 
   def _initTelemetry(self) -> None:
-    SmartDashboard.putNumber("Game/Field/Length", constants.Game.Field.kLength)
-    SmartDashboard.putNumber("Game/Field/Width", constants.Game.Field.kWidth)
-    SmartDashboard.putNumber("Robot/Drive/Chassis/RobotLength", constants.Subsystems.Drive.kRobotLength)
-    SmartDashboard.putNumber("Robot/Drive/Chassis/RobotWidth", constants.Subsystems.Drive.kRobotWidth)
-    SmartDashboard.putString("Robot/Cameras/Driver", constants.Cameras.kDriverStream)
-    SmartDashboard.putStringArray("Robot/Sensors/Pose/Names", tuple(c.name for c in constants.Sensors.Pose.kPoseSensorConfigs))
+    SmartDashboard.putNumber("Game/Field/Length", constants.Game.Field.LENGTH)
+    SmartDashboard.putNumber("Game/Field/Width", constants.Game.Field.WIDTH)
+    SmartDashboard.putNumber("Robot/Drive/Chassis/RobotLength", constants.Subsystems.Drive.ROBOT_LENGTH)
+    SmartDashboard.putNumber("Robot/Drive/Chassis/RobotWidth", constants.Subsystems.Drive.ROBOT_WIDTH)
+    SmartDashboard.putString("Robot/Cameras/Driver", constants.Cameras.DRIVER_STREAM)
+    SmartDashboard.putStringArray("Robot/Sensors/Pose/Names", tuple(c.name for c in constants.Sensors.Pose.POSE_SENSOR_CONFIGS))
 
   def _periodic(self) -> None:
     self._updateTelemetry()

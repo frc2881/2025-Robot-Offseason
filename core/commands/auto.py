@@ -45,8 +45,8 @@ class Auto:
       self._robot.localization.resetRobotPose,
       self._robot.drive.getChassisSpeeds, 
       self._robot.drive.setChassisSpeeds, 
-      constants.Subsystems.Drive.kPathPlannerController,
-      constants.Subsystems.Drive.kPathPlannerRobotConfig,
+      constants.Subsystems.Drive.PATHPLANNER_CONTROLLER,
+      constants.Subsystems.Drive.PATHPLANNER_ROBOT_CONFIG,
       lambda: utils.getAlliance() == Alliance.Red,
       self._robot.drive
     )
@@ -83,7 +83,7 @@ class Auto:
   def _alignToTarget(self, targetAlignmentLocation: TargetAlignmentLocation) -> Command:
     return (
       self._robot.game.alignRobotToTarget(TargetAlignmentMode.Translation, targetAlignmentLocation)
-      .withTimeout(constants.Game.Commands.kAutoTargetAlignmentTimeout)
+      .withTimeout(constants.Game.Commands.AUTO_TARGET_ALIGNMENT_TIMEOUT)
       .deadlineFor(logger.log_(f'Auto:AlignToTarget:{targetAlignmentLocation.name}'))
     )
   

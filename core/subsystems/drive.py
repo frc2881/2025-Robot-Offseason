@@ -24,35 +24,35 @@ class Drive(Subsystem):
     
     self._constants = constants.Subsystems.Drive
 
-    self._modules = tuple(SwerveModule(c) for c in self._constants.kSwerveModuleConfigs)
+    self._modules = tuple(SwerveModule(c) for c in self._constants.SWERVE_MODULE_CONFIGS)
     self._modulesStatesPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SmartDashboard/Robot/Drive/Modules/States", SwerveModuleState).publish()
 
-    self._inputXFilter = SlewRateLimiter(self._constants.kInputRateLimitDemo)
-    self._inputYFilter = SlewRateLimiter(self._constants.kInputRateLimitDemo)
-    self._inputRotationFilter = SlewRateLimiter(self._constants.kInputRateLimitDemo)
+    self._inputXFilter = SlewRateLimiter(self._constants.INPUT_RATE_LIMIT_DEMO)
+    self._inputYFilter = SlewRateLimiter(self._constants.INPUT_RATE_LIMIT_DEMO)
+    self._inputRotationFilter = SlewRateLimiter(self._constants.INPUT_RATE_LIMIT_DEMO)
 
     self._driftCorrectionState = State.Stopped
-    self._driftCorrectionController = PIDController(*self._constants.kDriftCorrectionConstants.rotationPID)
-    self._driftCorrectionController.setTolerance(*self._constants.kDriftCorrectionConstants.rotationTolerance)
+    self._driftCorrectionController = PIDController(*self._constants.DRIFT_CORRECTION_CONSTANTS.rotationPID)
+    self._driftCorrectionController.setTolerance(*self._constants.DRIFT_CORRECTION_CONSTANTS.rotationTolerance)
     self._driftCorrectionController.enableContinuousInput(-180.0, 180.0)
 
     self._targetAlignmentState = State.Stopped
     self._targetAlignmentPose: Pose3d = None
     self._targetAlignmentTranslationXController = ProfiledPIDController(
-      *self._constants.kTargetAlignmentConstants.translationPID, 
-      TrapezoidProfile.Constraints(self._constants.kTargetAlignmentConstants.translationMaxVelocity, self._constants.kTargetAlignmentConstants.translationMaxAcceleration)
+      *self._constants.TARGET_ALIGNMENT_CONSTANTS.translationPID, 
+      TrapezoidProfile.Constraints(self._constants.TARGET_ALIGNMENT_CONSTANTS.translationMaxVelocity, self._constants.TARGET_ALIGNMENT_CONSTANTS.translationMaxAcceleration)
     )
-    self._targetAlignmentTranslationXController.setTolerance(*self._constants.kTargetAlignmentConstants.translationTolerance)
+    self._targetAlignmentTranslationXController.setTolerance(*self._constants.TARGET_ALIGNMENT_CONSTANTS.translationTolerance)
     self._targetAlignmentTranslationYController = ProfiledPIDController(
-      *self._constants.kTargetAlignmentConstants.translationPID, 
-      TrapezoidProfile.Constraints(self._constants.kTargetAlignmentConstants.translationMaxVelocity, self._constants.kTargetAlignmentConstants.translationMaxAcceleration)
+      *self._constants.TARGET_ALIGNMENT_CONSTANTS.translationPID, 
+      TrapezoidProfile.Constraints(self._constants.TARGET_ALIGNMENT_CONSTANTS.translationMaxVelocity, self._constants.TARGET_ALIGNMENT_CONSTANTS.translationMaxAcceleration)
     )
-    self._targetAlignmentTranslationYController.setTolerance(*self._constants.kTargetAlignmentConstants.translationTolerance)
+    self._targetAlignmentTranslationYController.setTolerance(*self._constants.TARGET_ALIGNMENT_CONSTANTS.translationTolerance)
     self._targetAlignmentRotationController = ProfiledPIDController(
-      *self._constants.kTargetAlignmentConstants.rotationPID, 
-      TrapezoidProfile.Constraints(self._constants.kTargetAlignmentConstants.rotationMaxVelocity, self._constants.kTargetAlignmentConstants.rotationMaxAcceleration)
+      *self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationPID, 
+      TrapezoidProfile.Constraints(self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationMaxVelocity, self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationMaxAcceleration)
     )
-    self._targetAlignmentRotationController.setTolerance(*self._constants.kTargetAlignmentConstants.rotationTolerance)
+    self._targetAlignmentRotationController.setTolerance(*self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationTolerance)
     self._targetAlignmentRotationController.enableContinuousInput(-180.0, 180.0)
 
     self._speedMode: SpeedMode = SpeedMode.Competition
@@ -110,13 +110,13 @@ class Drive(Subsystem):
           inputRotation = 0
 
     if self._speedMode == SpeedMode.Demo:
-      inputX = self._inputXFilter.calculate(inputX * self._constants.kInputLimitDemo)
-      inputY = self._inputYFilter.calculate(inputY * self._constants.kInputLimitDemo)
-      inputRotation = self._inputRotationFilter.calculate(inputRotation * self._constants.kInputLimitDemo)
+      inputX = self._inputXFilter.calculate(inputX * self._constants.INPUT_LIMIT_DEMO)
+      inputY = self._inputYFilter.calculate(inputY * self._constants.INPUT_LIMIT_DEMO)
+      inputRotation = self._inputRotationFilter.calculate(inputRotation * self._constants.INPUT_LIMIT_DEMO)
 
-    speedX: units.meters_per_second = inputX * self._constants.kTranslationSpeedMax
-    speedY: units.meters_per_second = inputY * self._constants.kTranslationSpeedMax
-    speedRotation: units.degrees_per_second = inputRotation * self._constants.kRotationSpeedMax
+    speedX: units.meters_per_second = inputX * self._constants.TRANSLATION_SPEED_MAX
+    speedY: units.meters_per_second = inputY * self._constants.TRANSLATION_SPEED_MAX
+    speedRotation: units.degrees_per_second = inputRotation * self._constants.ROTATION_SPEED_MAX
     
     self.setChassisSpeeds(
       ChassisSpeeds.fromFieldRelativeSpeeds(speedX, speedY, units.degreesToRadians(speedRotation), Rotation2d.fromDegrees(self._getGyroHeading()))
@@ -128,23 +128,23 @@ class Drive(Subsystem):
     self._setModuleStates(chassisSpeeds)
 
   def getChassisSpeeds(self) -> ChassisSpeeds:
-    return self._constants.kDriveKinematics.toChassisSpeeds(self._getModuleStates())
+    return self._constants.DRIVE_KINEMATICS.toChassisSpeeds(self._getModuleStates())
 
   def getModulePositions(self) -> tuple[SwerveModulePosition, ...]:
     return tuple(m.getPosition() for m in self._modules)
 
   def _setModuleStates(self, chassisSpeeds: ChassisSpeeds) -> None: 
     swerveModuleStates = SwerveDrive4Kinematics.desaturateWheelSpeeds(
-      self._constants.kDriveKinematics.toSwerveModuleStates(
+      self._constants.DRIVE_KINEMATICS.toSwerveModuleStates(
         ChassisSpeeds.discretize(
-          self._constants.kDriveKinematics.toChassisSpeeds(
+          self._constants.DRIVE_KINEMATICS.toChassisSpeeds(
             SwerveDrive4Kinematics.desaturateWheelSpeeds(
-              self._constants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds), 
-              self._constants.kTranslationSpeedMax
+              self._constants.DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds), 
+              self._constants.TRANSLATION_SPEED_MAX
             )
           ), 0.02
         )
-      ), self._constants.kTranslationSpeedMax
+      ), self._constants.TRANSLATION_SPEED_MAX
     )
     for i, m in enumerate(self._modules):
       m.setTargetState(swerveModuleStates[i])
@@ -192,9 +192,9 @@ class Drive(Subsystem):
     self._targetAlignmentTranslationYController.setGoal(0)
     self._targetAlignmentRotationController.reset(robotPose.rotation().degrees())
     self._targetAlignmentRotationController.setGoal(
-      targetAlignmentPose.toPose2d().rotation().degrees() + self._constants.kTargetAlignmentConstants.rotationTranslationModeOffset
+      targetAlignmentPose.toPose2d().rotation().degrees() + self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationTranslationModeOffset
       if targetAlignmentMode == TargetAlignmentMode.Translation else
-      utils.wrapAngle(utils.getTargetHeading(robotPose, targetAlignmentPose) + self._constants.kTargetAlignmentConstants.rotationHeadingModeOffset)
+      utils.wrapAngle(utils.getTargetHeading(robotPose, targetAlignmentPose) + self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationHeadingModeOffset)
     )
 
   def _runTargetAlignment(self, robotPose: Pose2d, targetAlignmentMode: TargetAlignmentMode) -> None:

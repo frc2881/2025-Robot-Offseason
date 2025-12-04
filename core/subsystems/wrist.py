@@ -13,14 +13,14 @@ class Wrist(Subsystem):
 
     self._hasInitialZeroReset: bool = False
 
-    self._wrist = RelativePositionControlModule(self._constants.kWristConfig)
+    self._wrist = RelativePositionControlModule(self._constants.WRIST_CONFIG)
     
   def periodic(self) -> None:
     self._updateTelemetry()
     
   def setSpeed(self, getInput: Callable[[], units.percent]) -> Command:
     return self.runEnd(
-      lambda: self._wrist.setSpeed(getInput() * self._constants.kInputLimit),
+      lambda: self._wrist.setSpeed(getInput() * self._constants.INPUT_LIMIT),
       lambda: self.reset()
     ).withName("Arm:SetSpeed")
 

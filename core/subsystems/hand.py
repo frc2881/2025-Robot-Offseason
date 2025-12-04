@@ -15,11 +15,11 @@ class Hand(Subsystem):
 
     self._sensorHasTarget = sensorHasTarget
     
-    self._motor = SparkFlex(self._constants.kMotorCANId, SparkBase.MotorType.kBrushless)
+    self._motor = SparkFlex(self._constants.MOTOR_CAN_ID, SparkBase.MotorType.kBrushless)
     self._sparkConfig = SparkBaseConfig()
     (self._sparkConfig
       .setIdleMode(SparkBaseConfig.IdleMode.kBrake)
-      .smartCurrentLimit(self._constants.kMotorCurrentLimit)
+      .smartCurrentLimit(self._constants.MOTOR_CURRENT_LIMIT)
       .inverted(False))
     utils.setSparkConfig(
       self._motor.configure(
@@ -34,19 +34,19 @@ class Hand(Subsystem):
       
   def intakeCoral(self) -> Command:
     return self.runEnd(
-      lambda: self._motor.set(self._constants.kMotorIntakeCoralSpeed),
+      lambda: self._motor.set(self._constants.MOTOR_INTAKE_CORAL_SPEED),
       lambda: self._motor.stopMotor()
     ).withName("Hand:IntakeCoral")
   
   def intakeCoralFromGround(self) -> Command:
     return self.runEnd(
-      lambda: self._motor.set(self._constants.kMotorIntakeCoralFromGroundSpeed),
+      lambda: self._motor.set(self._constants.MOTOR_INTAKE_CORAL_FROM_GROUND_SPEED),
       lambda: self._motor.stopMotor()
     ).withName("Hand:IntakeCoralFromGround")
 
   def scoreCoral(self) -> Command:
     return self.startEnd(
-      lambda: self._motor.set(self._constants.kMotorScoreCoralSpeed),
+      lambda: self._motor.set(self._constants.MOTOR_SCORE_CORAL_SPEED),
       lambda: self._motor.stopMotor()
     ).beforeStarting(
       self.startEnd(
@@ -54,21 +54,21 @@ class Hand(Subsystem):
         lambda: self._motor.stopMotor()
       ).withTimeout(0.08)
     ).withTimeout(
-      self._constants.kScoreCoralTimeout
+      self._constants.SCORE_CORAL_TIMEOUT
     ).withName("Hand:ScoreCoral")
   
   def intakeAlgae(self) -> Command:
     return self.runEnd(
-      lambda: self._motor.set(-self._constants.kMotorIntakeAlgaeSpeed),
+      lambda: self._motor.set(-self._constants.MOTOR_INTAKE_ALGAE_SPEED),
       lambda: self._motor.stopMotor()
     ).withName("Hand:IntakeAlgae")
   
   def scoreAlgae(self) -> Command:
     return self.runEnd(
-      lambda: self._motor.set(self._constants.kMotorScoreAlgaeSpeed),
+      lambda: self._motor.set(self._constants.MOTOR_SCORE_ALGAE_SPEED),
       lambda: self._motor.stopMotor()
     ).withTimeout(
-      self._constants.kScoreAlgaeTimeout
+      self._constants.SCORE_ALGAE_TIMEOUT
     ).withName("Hand:ScoreAlgae")
 
   def isEnabled(self) -> bool:

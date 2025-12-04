@@ -25,7 +25,7 @@ class Localization():
     self._poseSensors = poseSensors
 
     self._poseEstimator = SwerveDrive4PoseEstimator(
-      constants.Subsystems.Drive.kDriveKinematics,
+      constants.Subsystems.Drive.DRIVE_KINEMATICS,
       self._getGyroRotation(),
       self._getDriveModulePositions(),
       Pose2d()
@@ -81,16 +81,16 @@ class Localization():
 
   def _isValidTarget(self, distance: units.meters, ambiguity: units.percent, strategy: PoseStrategy) -> bool:
     return (
-      distance <= constants.Services.Localization.kVisionMaxTargetDistance and (
+      distance <= constants.Services.Localization.VISION_MAX_TARGET_DISTANCE and (
         strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR or 
-        utils.isValueInRange(ambiguity, 0, constants.Services.Localization.kVisionMaxPoseAmbiguity)
+        utils.isValueInRange(ambiguity, 0, constants.Services.Localization.VISION_MAX_POSE_AMBIGUITY)
       )
     )
 
   def _isValidRobotPose(self, pose: Pose3d) -> bool:
     return (
-      utils.isPoseInBounds(pose.toPose2d(), constants.Game.Field.kBounds) and 
-      math.fabs(pose.Z()) <= constants.Services.Localization.kRobotPoseMaxGroundPlaneDelta
+      utils.isPoseInBounds(pose.toPose2d(), constants.Game.Field.BOUNDS) and 
+      math.fabs(pose.Z()) <= constants.Services.Localization.VISION_MAX_GROUND_PLANE_DELTA
     )
 
   def getRobotPose(self) -> Pose2d:
@@ -102,7 +102,7 @@ class Localization():
   def _updateTargets(self) -> None:
     if utils.getAlliance() != self._alliance:
       self._alliance = utils.getAlliance()
-      self._targets = constants.Game.Field.Targets.kTargets[self._alliance]
+      self._targets = constants.Game.Field.Targets.TARGETS[self._alliance]
       self._targetPoses = [t.pose.toPose2d() for t in self._targets.values()]
 
   def getTargetPose(self, targetAlignmentLocation: TargetAlignmentLocation, isElevatorReefCoralL4: bool) -> Pose3d:
@@ -110,7 +110,7 @@ class Localization():
     if target is not None:
       if target.type == TargetType.Reef and isElevatorReefCoralL4:
         targetAlignmentLocation = TargetAlignmentLocation.LeftL4 if targetAlignmentLocation == TargetAlignmentLocation.Left else TargetAlignmentLocation.RightL4
-      return target.pose.transformBy(constants.Game.Field.Targets.kTargetAlignmentTransforms[target.type][targetAlignmentLocation])
+      return target.pose.transformBy(constants.Game.Field.Targets.TARGET_ALIGNMENT_TRANSFORMS[target.type][targetAlignmentLocation])
     return Pose3d(self._robotPose)
 
   def hasValidVisionTarget(self) -> bool:

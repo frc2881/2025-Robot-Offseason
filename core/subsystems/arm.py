@@ -13,14 +13,14 @@ class Arm(Subsystem):
 
     self._hasInitialZeroReset: bool = False
 
-    self._arm = RelativePositionControlModule(self._constants.kArmConfig)
+    self._arm = RelativePositionControlModule(self._constants.ARM_CONFIG)
 
   def periodic(self) -> None:
     self._updateTelemetry()
 
   def setSpeed(self, getInput: Callable[[], units.percent]) -> Command:
     return self.runEnd(
-      lambda: self._arm.setSpeed(getInput() * self._constants.kInputLimit),
+      lambda: self._arm.setSpeed(getInput() * self._constants.INPUT_LIMIT),
       lambda: self.reset()
     ).withName("Arm:SetSpeed")
   

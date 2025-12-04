@@ -16,16 +16,16 @@ class Elevator(Subsystem):
 
     self._hasInitialZeroReset: bool = False
 
-    self._lowerStage = RelativePositionControlModule(self._constants.kLowerStageConfig)
-    self._lowerStageFollower = FollowerModule(self._constants.kLowerStageFollowerConfig)
-    self._upperStage = RelativePositionControlModule(self._constants.kUpperStageConfig)
+    self._lowerStage = RelativePositionControlModule(self._constants.LOWER_STAGE_CONFIG)
+    self._lowerStageFollower = FollowerModule(self._constants.LOWER_STAGE_FOLLOWER_CONFIG)
+    self._upperStage = RelativePositionControlModule(self._constants.UPPER_STAGE_CONFIG)
 
   def periodic(self) -> None:
     self._updateTelemetry()
 
   def setSpeed(self, getInput: Callable[[], units.percent], elevatorStage: ElevatorStage = ElevatorStage.Both) -> Command:
     return self.runEnd(
-      lambda: self._setSpeed(getInput() * self._constants.kInputLimit, elevatorStage),
+      lambda: self._setSpeed(getInput() * self._constants.INPUT_LIMIT, elevatorStage),
       lambda: self.reset()
     ).withName(f'Elevator:SetSpeed:{ elevatorStage.name }')
   
@@ -41,7 +41,7 @@ class Elevator(Subsystem):
         self._lowerStage.setSpeed(speed)
         self._upperStage.setSpeed(
           speed 
-          if speed > 0 or self._lowerStage.isAtSoftLimit(MotorDirection.Reverse, self._constants.kLowerStageSoftLimitBuffer) 
+          if speed > 0 or self._lowerStage.isAtSoftLimit(MotorDirection.Reverse, self._constants.LOWER_STAGE_SOFT_LIMIT_BUFFER) 
           else 0
         )
   
@@ -66,7 +66,7 @@ class Elevator(Subsystem):
     return self._lowerStage.isAtTargetPosition() and self._upperStage.isAtTargetPosition()
   
   def isAtReefCoralL4Position(self) -> bool:
-    return self.getPosition().lowerStage > self._constants.kLowerStageReefCoralL4Position
+    return self.getPosition().lowerStage > self._constants.LOWER_STAGE_REEF_CORAL_L4_POSITION
 
   def setUpperStageSoftLimitsEnabled(self, isEnabled: bool) -> None:
     self._upperStage.setSoftLimitsEnabled(isEnabled)
