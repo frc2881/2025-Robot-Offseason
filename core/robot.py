@@ -120,8 +120,8 @@ class RobotCore:
   def _initTelemetry(self) -> None:
     SmartDashboard.putNumber("Game/Field/Length", constants.Game.Field.LENGTH)
     SmartDashboard.putNumber("Game/Field/Width", constants.Game.Field.WIDTH)
-    SmartDashboard.putNumber("Robot/Drive/Chassis/RobotLength", constants.Subsystems.Drive.ROBOT_LENGTH)
-    SmartDashboard.putNumber("Robot/Drive/Chassis/RobotWidth", constants.Subsystems.Drive.ROBOT_WIDTH)
+    SmartDashboard.putNumber("Robot/Drive/Chassis/Length", constants.Subsystems.Drive.CHASSIS_LENGTH)
+    SmartDashboard.putNumber("Robot/Drive/Chassis/Width", constants.Subsystems.Drive.CHASSIS_WIDTH)
     SmartDashboard.putString("Robot/Cameras/Driver", constants.Cameras.DRIVER_STREAM)
     SmartDashboard.putStringArray("Robot/Sensors/Pose/Names", tuple(c.name for c in constants.Sensors.Pose.POSE_SENSOR_CONFIGS))
 

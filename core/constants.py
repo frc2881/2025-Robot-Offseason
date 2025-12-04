@@ -42,10 +42,10 @@ _PATHPLANNER_ROBOT_CONFIG = RobotConfig.fromGUISettings()
 
 class Subsystems:
   class Drive:
-    ROBOT_LENGTH: units.meters = units.inchesToMeters(36.0)
-    ROBOT_WIDTH: units.meters = units.inchesToMeters(36.0)
-    TRACK_WIDTH: units.meters = units.inchesToMeters(26.0)
+    CHASSIS_LENGTH: units.meters = units.inchesToMeters(36.0)
+    CHASSIS_WIDTH: units.meters = units.inchesToMeters(36.0)
     WHEEL_BASE: units.meters = units.inchesToMeters(26.0)
+    TRACK_WIDTH: units.meters = units.inchesToMeters(26.0)
 
     TRANSLATION_SPEED_MAX: units.meters_per_second = 5.74
     ROTATION_SPEED_MAX: units.degrees_per_second = 720.0
