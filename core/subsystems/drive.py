@@ -84,9 +84,6 @@ class Drive(Subsystem):
 
     self._lockPosition = Position.Unlocked
 
-    SmartDashboard.putNumber("Robot/Drive/Chassis/RobotLength", self._constants.kRobotLength)
-    SmartDashboard.putNumber("Robot/Drive/Chassis/RobotWidth", self._constants.kRobotWidth)
-
   def periodic(self) -> None:
     self._updateTelemetry()
 

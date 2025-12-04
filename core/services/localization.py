@@ -39,8 +39,6 @@ class Localization():
     self._validVisionTargetBufferTimer = Timer()
     
     self._robotPosePublisher = NetworkTableInstance.getDefault().getStructTopic("/SmartDashboard/Robot/Localization/Pose", Pose2d).publish()
-    SmartDashboard.putNumber("Game/Field/Length", constants.Game.Field.kLength)
-    SmartDashboard.putNumber("Game/Field/Width", constants.Game.Field.kWidth)
 
     utils.addRobotPeriodic(self._periodic)
 

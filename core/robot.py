@@ -27,12 +27,12 @@ class RobotCore:
     self._initCommands()
     self._initTriggers()
     self._initLights()
+    self._initTelemetry()
     utils.addRobotPeriodic(self._periodic)
 
   def _initSensors(self) -> None:
     self.gyro = Gyro_NAVX2(constants.Sensors.Gyro.NAVX2.kComType)
     self.poseSensors = tuple(PoseSensor(c) for c in constants.Sensors.Pose.kPoseSensorConfigs)
-    SmartDashboard.putStringArray("Robot/Sensors/Pose/Names", tuple(c.name for c in constants.Sensors.Pose.kPoseSensorConfigs))
     self.handSensor = BinarySensor(constants.Sensors.Binary.Hand.kSensorConfig)
     
   def _initSubsystems(self) -> None:
@@ -48,7 +48,6 @@ class RobotCore:
       self.drive.getModulePositions, 
       self.poseSensors
     )
-    SmartDashboard.putString("Robot/Cameras/Driver", constants.Cameras.kDriverStream)
 
   def _initControllers(self) -> None:
     self.driver = Xbox(constants.Controllers.kDriverControllerPort, constants.Controllers.kInputDeadband)
@@ -117,6 +116,14 @@ class RobotCore:
       self.game.isRobotReadyForScoring,
       self.game.isHandHolding
     )
+
+  def _initTelemetry(self) -> None:
+    SmartDashboard.putNumber("Game/Field/Length", constants.Game.Field.kLength)
+    SmartDashboard.putNumber("Game/Field/Width", constants.Game.Field.kWidth)
+    SmartDashboard.putNumber("Robot/Drive/Chassis/RobotLength", constants.Subsystems.Drive.kRobotLength)
+    SmartDashboard.putNumber("Robot/Drive/Chassis/RobotWidth", constants.Subsystems.Drive.kRobotWidth)
+    SmartDashboard.putString("Robot/Cameras/Driver", constants.Cameras.kDriverStream)
+    SmartDashboard.putStringArray("Robot/Sensors/Pose/Names", tuple(c.name for c in constants.Sensors.Pose.kPoseSensorConfigs))
 
   def _periodic(self) -> None:
     self._updateTelemetry()
