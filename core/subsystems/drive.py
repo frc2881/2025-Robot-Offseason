@@ -110,9 +110,9 @@ class Drive(Subsystem):
           inputRotation = 0
 
     if self._speedMode == SpeedMode.Demo:
-      inputX = self._inputXFilter.calculate(inputX * self._constants.INPUT_LIMIT_DEMO)
-      inputY = self._inputYFilter.calculate(inputY * self._constants.INPUT_LIMIT_DEMO)
-      inputRotation = self._inputRotationFilter.calculate(inputRotation * self._constants.INPUT_LIMIT_DEMO)
+      inputX = self._inputXFilter.calculate(inputX * self._constants.INPUT_LIMIT_DEMO) if inputX != 0 else 0
+      inputY = self._inputYFilter.calculate(inputY * self._constants.INPUT_LIMIT_DEMO) if inputY != 0 else 0
+      inputRotation = self._inputRotationFilter.calculate(inputRotation * self._constants.INPUT_LIMIT_DEMO) if inputRotation != 0 else 0
 
     speedX: units.meters_per_second = inputX * self._constants.TRANSLATION_SPEED_MAX
     speedY: units.meters_per_second = inputY * self._constants.TRANSLATION_SPEED_MAX
