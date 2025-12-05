@@ -37,8 +37,8 @@ from core.classes import (
   ElevatorPosition
 )
 
-_APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout(f'{ wpilib.getDeployDirectory() }/localization/2025-reefscape-andymark-filtered.json')
-_PATHPLANNER_ROBOT_CONFIG = RobotConfig.fromGUISettings()
+_aprilTagFieldLayout = AprilTagFieldLayout(f'{ wpilib.getDeployDirectory() }/localization/2025-reefscape-andymark-filtered.json')
+_pathPlannerRobotConfig = RobotConfig.fromGUISettings()
 
 class Subsystems:
   class Drive:
@@ -77,7 +77,7 @@ class Subsystems:
 
     DRIVE_KINEMATICS = SwerveDrive4Kinematics(*(c.translation for c in SWERVE_MODULE_CONFIGS))
 
-    PATHPLANNER_ROBOT_CONFIG = _PATHPLANNER_ROBOT_CONFIG
+    PATHPLANNER_ROBOT_CONFIG = _pathPlannerRobotConfig
     PATHPLANNER_CONTROLLER = PPHolonomicDriveController(PIDConstants(5.0, 0, 0), PIDConstants(5.0, 0, 0))
 
     DRIFT_CORRECTION_CONSTANTS = DriftCorrectionConstants(
@@ -208,7 +208,7 @@ class Sensors:
 
   class Pose:
     _poseSensorConstants = PoseSensorConstants(
-      aprilTagFieldLayout = _APRIL_TAG_FIELD_LAYOUT,
+      aprilTagFieldLayout = _aprilTagFieldLayout,
       poseStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
       fallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY
     )
@@ -238,7 +238,7 @@ class Sensors:
           Translation3d(units.inchesToMeters(-8.8236), units.inchesToMeters(7.2958), units.inchesToMeters(36.55)),
           Rotation3d(units.degreesToRadians(0), units.degreesToRadians(19.3), units.degreesToRadians(165.0))
         ), 
-        stream = "http://10.28.81.7:1186/?action=stream", 
+        stream = "http://10.28.81.7:1184/?action=stream", 
         constants = _poseSensorConstants
       ),
       PoseSensorConfig(
@@ -265,32 +265,31 @@ class Game:
     AUTO_TARGET_ALIGNMENT_TIMEOUT: units.seconds = 1.5
 
   class Field:
-    APRILTAG_FIELD_LAYOUT = _APRIL_TAG_FIELD_LAYOUT
-    LENGTH = _APRIL_TAG_FIELD_LAYOUT.getFieldLength()
-    WIDTH = _APRIL_TAG_FIELD_LAYOUT.getFieldWidth()
+    LENGTH = _aprilTagFieldLayout.getFieldLength()
+    WIDTH = _aprilTagFieldLayout.getFieldWidth()
     BOUNDS = (Translation2d(0, 0), Translation2d(LENGTH, WIDTH))
 
     class Targets:
       TARGETS: dict[Alliance, dict[int, Target]] = {
         Alliance.Red: {
-          utils.getTargetHash(_APRIL_TAG_FIELD_LAYOUT.getTagPose(1).toPose2d()): Target(TargetType.CoralStation, _APRIL_TAG_FIELD_LAYOUT.getTagPose(1)),
-          utils.getTargetHash(_APRIL_TAG_FIELD_LAYOUT.getTagPose(2).toPose2d()): Target(TargetType.CoralStation, _APRIL_TAG_FIELD_LAYOUT.getTagPose(2)),
-          utils.getTargetHash(_APRIL_TAG_FIELD_LAYOUT.getTagPose(6).toPose2d()): Target(TargetType.Reef, _APRIL_TAG_FIELD_LAYOUT.getTagPose(6)),
-          utils.getTargetHash(_APRIL_TAG_FIELD_LAYOUT.getTagPose(7).toPose2d()): Target(TargetType.Reef, _APRIL_TAG_FIELD_LAYOUT.getTagPose(7)),
-          utils.getTargetHash(_APRIL_TAG_FIELD_LAYOUT.getTagPose(8).toPose2d()): Target(TargetType.Reef, _APRIL_TAG_FIELD_LAYOUT.getTagPose(8)),
-          utils.getTargetHash(_APRIL_TAG_FIELD_LAYOUT.getTagPose(9).toPose2d()): Target(TargetType.Reef, _APRIL_TAG_FIELD_LAYOUT.getTagPose(9)),
-          utils.getTargetHash(_APRIL_TAG_FIELD_LAYOUT.getTagPose(10).toPose2d()): Target(TargetType.Reef, _APRIL_TAG_FIELD_LAYOUT.getTagPose(10)),
-          utils.getTargetHash(_APRIL_TAG_FIELD_LAYOUT.getTagPose(11).toPose2d()): Target(TargetType.Reef, _APRIL_TAG_FIELD_LAYOUT.getTagPose(11))
+          utils.getTargetHash(_aprilTagFieldLayout.getTagPose(1).toPose2d()): Target(TargetType.CoralStation, _aprilTagFieldLayout.getTagPose(1)),
+          utils.getTargetHash(_aprilTagFieldLayout.getTagPose(2).toPose2d()): Target(TargetType.CoralStation, _aprilTagFieldLayout.getTagPose(2)),
+          utils.getTargetHash(_aprilTagFieldLayout.getTagPose(6).toPose2d()): Target(TargetType.Reef, _aprilTagFieldLayout.getTagPose(6)),
+          utils.getTargetHash(_aprilTagFieldLayout.getTagPose(7).toPose2d()): Target(TargetType.Reef, _aprilTagFieldLayout.getTagPose(7)),
+          utils.getTargetHash(_aprilTagFieldLayout.getTagPose(8).toPose2d()): Target(TargetType.Reef, _aprilTagFieldLayout.getTagPose(8)),
+          utils.getTargetHash(_aprilTagFieldLayout.getTagPose(9).toPose2d()): Target(TargetType.Reef, _aprilTagFieldLayout.getTagPose(9)),
+          utils.getTargetHash(_aprilTagFieldLayout.getTagPose(10).toPose2d()): Target(TargetType.Reef, _aprilTagFieldLayout.getTagPose(10)),
+          utils.getTargetHash(_aprilTagFieldLayout.getTagPose(11).toPose2d()): Target(TargetType.Reef, _aprilTagFieldLayout.getTagPose(11))
         },
         Alliance.Blue: {
-          utils.getTargetHash(_APRIL_TAG_FIELD_LAYOUT.getTagPose(12).toPose2d()): Target(TargetType.CoralStation, _APRIL_TAG_FIELD_LAYOUT.getTagPose(12)),
-          utils.getTargetHash(_APRIL_TAG_FIELD_LAYOUT.getTagPose(13).toPose2d()): Target(TargetType.CoralStation, _APRIL_TAG_FIELD_LAYOUT.getTagPose(13)),
-          utils.getTargetHash(_APRIL_TAG_FIELD_LAYOUT.getTagPose(17).toPose2d()): Target(TargetType.Reef, _APRIL_TAG_FIELD_LAYOUT.getTagPose(17)),
-          utils.getTargetHash(_APRIL_TAG_FIELD_LAYOUT.getTagPose(18).toPose2d()): Target(TargetType.Reef, _APRIL_TAG_FIELD_LAYOUT.getTagPose(18)),
-          utils.getTargetHash(_APRIL_TAG_FIELD_LAYOUT.getTagPose(19).toPose2d()): Target(TargetType.Reef, _APRIL_TAG_FIELD_LAYOUT.getTagPose(19)),
-          utils.getTargetHash(_APRIL_TAG_FIELD_LAYOUT.getTagPose(20).toPose2d()): Target(TargetType.Reef, _APRIL_TAG_FIELD_LAYOUT.getTagPose(20)),
-          utils.getTargetHash(_APRIL_TAG_FIELD_LAYOUT.getTagPose(21).toPose2d()): Target(TargetType.Reef, _APRIL_TAG_FIELD_LAYOUT.getTagPose(21)),
-          utils.getTargetHash(_APRIL_TAG_FIELD_LAYOUT.getTagPose(22).toPose2d()): Target(TargetType.Reef, _APRIL_TAG_FIELD_LAYOUT.getTagPose(22))
+          utils.getTargetHash(_aprilTagFieldLayout.getTagPose(12).toPose2d()): Target(TargetType.CoralStation, _aprilTagFieldLayout.getTagPose(12)),
+          utils.getTargetHash(_aprilTagFieldLayout.getTagPose(13).toPose2d()): Target(TargetType.CoralStation, _aprilTagFieldLayout.getTagPose(13)),
+          utils.getTargetHash(_aprilTagFieldLayout.getTagPose(17).toPose2d()): Target(TargetType.Reef, _aprilTagFieldLayout.getTagPose(17)),
+          utils.getTargetHash(_aprilTagFieldLayout.getTagPose(18).toPose2d()): Target(TargetType.Reef, _aprilTagFieldLayout.getTagPose(18)),
+          utils.getTargetHash(_aprilTagFieldLayout.getTagPose(19).toPose2d()): Target(TargetType.Reef, _aprilTagFieldLayout.getTagPose(19)),
+          utils.getTargetHash(_aprilTagFieldLayout.getTagPose(20).toPose2d()): Target(TargetType.Reef, _aprilTagFieldLayout.getTagPose(20)),
+          utils.getTargetHash(_aprilTagFieldLayout.getTagPose(21).toPose2d()): Target(TargetType.Reef, _aprilTagFieldLayout.getTagPose(21)),
+          utils.getTargetHash(_aprilTagFieldLayout.getTagPose(22).toPose2d()): Target(TargetType.Reef, _aprilTagFieldLayout.getTagPose(22))
         }
       }
 
