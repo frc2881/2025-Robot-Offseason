@@ -118,6 +118,8 @@ class RobotCore:
     )
 
   def _initTelemetry(self) -> None:
+    SmartDashboard.putString("Game/Robot/Type", constants.Game.Robot.TYPE.name)
+    SmartDashboard.putString("Game/Robot/Name", constants.Game.Robot.NAME)
     SmartDashboard.putNumber("Game/Field/Length", constants.Game.Field.LENGTH)
     SmartDashboard.putNumber("Game/Field/Width", constants.Game.Field.WIDTH)
     SmartDashboard.putNumber("Robot/Drive/Chassis/Length", constants.Subsystems.Drive.CHASSIS_LENGTH)
