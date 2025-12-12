@@ -217,37 +217,25 @@ class Sensors:
     POSE_SENSOR_CONFIGS: tuple[PoseSensorConfig, ...] = (
       PoseSensorConfig(
         name = "FrontLeft",
-        transform = Transform3d(
-          Translation3d(units.inchesToMeters(-4.5972), units.inchesToMeters(8.125), units.inchesToMeters(39.3044)),
-          Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-30.0), units.degreesToRadians(1.0))
-        ), 
+        transform = Transform3d(Translation3d(-0.091468, 0.184259, 1.022391), Rotation3d(0.010458, -0.426496, 0.018353)), 
         stream = "http://10.28.81.7:1182/?action=stream", 
         constants = _poseSensorConstants
       ),
       PoseSensorConfig(
         name = "FrontRight",
-        transform = Transform3d(
-          Translation3d(units.inchesToMeters(-4.1391), units.inchesToMeters(-8.125), units.inchesToMeters(38.3683)),
-          Rotation3d(units.degreesToRadians(0), units.degreesToRadians(32.0), units.degreesToRadians(0))
-        ), 
+        transform = Transform3d(Translation3d(-0.117923, -0.219624, 0.955892), Rotation3d(0.021838, 0.534359, 0.026724)), 
         stream = "http://10.28.81.6:1184/?action=stream", 
         constants = _poseSensorConstants
       ),
       PoseSensorConfig(
         name = "RearLeft",
-        transform = Transform3d(
-          Translation3d(units.inchesToMeters(-8.8236), units.inchesToMeters(7.2958), units.inchesToMeters(36.55)),
-          Rotation3d(units.degreesToRadians(0), units.degreesToRadians(19.3), units.degreesToRadians(165.0))
-        ), 
+        transform = Transform3d(Translation3d(-0.207278, 0.195631, 0.896791), Rotation3d(-0.072770, 0.329107, 2.877271)),
         stream = "http://10.28.81.7:1184/?action=stream", 
         constants = _poseSensorConstants
       ),
       PoseSensorConfig(
         name = "RearRight",
-        transform = Transform3d(
-          Translation3d(units.inchesToMeters(-8.8236), units.inchesToMeters(-7.2958), units.inchesToMeters(36.55)),
-          Rotation3d(units.degreesToRadians(0), units.degreesToRadians(19.8), units.degreesToRadians(-165.5))
-        ), 
+        transform = Transform3d(Translation3d(-0.205358, -0.172876, 0.895682), Rotation3d(0.106889, 0.326341, -2.855118)), 
         stream = "http://10.28.81.6:1182/?action=stream", 
         constants = _poseSensorConstants
       )
