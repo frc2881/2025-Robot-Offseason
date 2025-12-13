@@ -87,14 +87,14 @@ class Subsystems:
     )
 
     TARGET_ALIGNMENT_CONSTANTS = TargetAlignmentConstants(
-      translationPID = PID(4.0, 0, 0),
-      translationMaxVelocity = 1.4,
+      translationPID = PID(5.0, 0, 0),
+      translationMaxVelocity = 2.0,
       translationMaxAcceleration = 1.0,
-      translationTolerance = Tolerance(0.05, 0.1),
-      rotationPID = PID(4.0, 0, 0),
-      rotationMaxVelocity = 360.0,
-      rotationMaxAcceleration = 180.0,
-      rotationTolerance = Tolerance(0.5, 1.0),
+      translationTolerance = Tolerance(0.025, 0.05),
+      rotationPID = PID(5.0, 0, 0),
+      rotationMaxVelocity = 540.0,
+      rotationMaxAcceleration = 360.0,
+      rotationTolerance = Tolerance(0.2, 0.4),
       rotationHeadingModeOffset = 0,
       rotationTranslationModeOffset = 180.0
     )

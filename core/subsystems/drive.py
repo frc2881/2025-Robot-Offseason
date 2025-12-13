@@ -205,9 +205,8 @@ class Drive(Subsystem):
       speedRotation = self._targetAlignmentRotationController.calculate(robotPose.rotation().degrees())
     if targetAlignmentMode == TargetAlignmentMode.Translation:
       targetTranslation = self._targetAlignmentPose.toPose2d() - robotPose
-      if not self._targetAlignmentTranslationXController.atGoal():
+      if not self._targetAlignmentTranslationXController.atGoal() or not self._targetAlignmentTranslationYController.atGoal():
         speedTranslationX = -self._targetAlignmentTranslationXController.calculate(targetTranslation.X())
-      if not self._targetAlignmentTranslationYController.atGoal():
         speedTranslationY = -self._targetAlignmentTranslationYController.calculate(targetTranslation.Y())
     self._setModuleStates(ChassisSpeeds(speedTranslationX, speedTranslationY, units.degreesToRadians(speedRotation)))
     if speedRotation == 0 and speedTranslationX == 0 and speedTranslationY == 0:
