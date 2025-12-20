@@ -5,7 +5,7 @@ from wpimath import units
 from wpimath.controller import PIDController, ProfiledPIDController
 from wpimath.trajectory import TrapezoidProfile
 from wpimath.filter import SlewRateLimiter
-from wpimath.geometry import Rotation2d, Pose2d, Pose3d
+from wpimath.geometry import Rotation2d, Pose2d, Pose3d, Transform2d
 from wpimath.kinematics import ChassisSpeeds, SwerveModulePosition, SwerveModuleState, SwerveDrive4Kinematics
 from ntcore import NetworkTableInstance
 from pathplannerlib.util import DriveFeedforwards
@@ -33,7 +33,7 @@ class Drive(Subsystem):
 
     self._driftCorrectionState = State.Stopped
     self._driftCorrectionController = PIDController(*self._constants.DRIFT_CORRECTION_CONSTANTS.rotationPID)
-    self._driftCorrectionController.setTolerance(*self._constants.DRIFT_CORRECTION_CONSTANTS.rotationTolerance)
+    self._driftCorrectionController.setTolerance(self._constants.DRIFT_CORRECTION_CONSTANTS.rotationPositionTolerance)
     self._driftCorrectionController.enableContinuousInput(-180.0, 180.0)
 
     self._targetAlignmentState = State.Stopped
@@ -42,17 +42,17 @@ class Drive(Subsystem):
       *self._constants.TARGET_ALIGNMENT_CONSTANTS.translationPID, 
       TrapezoidProfile.Constraints(self._constants.TARGET_ALIGNMENT_CONSTANTS.translationMaxVelocity, self._constants.TARGET_ALIGNMENT_CONSTANTS.translationMaxAcceleration)
     )
-    self._targetAlignmentTranslationXController.setTolerance(*self._constants.TARGET_ALIGNMENT_CONSTANTS.translationTolerance)
+    self._targetAlignmentTranslationXController.setTolerance(self._constants.TARGET_ALIGNMENT_CONSTANTS.translationPositionTolerance, self._constants.TARGET_ALIGNMENT_CONSTANTS.translationVelocityTolerance)
     self._targetAlignmentTranslationYController = ProfiledPIDController(
       *self._constants.TARGET_ALIGNMENT_CONSTANTS.translationPID, 
       TrapezoidProfile.Constraints(self._constants.TARGET_ALIGNMENT_CONSTANTS.translationMaxVelocity, self._constants.TARGET_ALIGNMENT_CONSTANTS.translationMaxAcceleration)
     )
-    self._targetAlignmentTranslationYController.setTolerance(*self._constants.TARGET_ALIGNMENT_CONSTANTS.translationTolerance)
+    self._targetAlignmentTranslationYController.setTolerance(self._constants.TARGET_ALIGNMENT_CONSTANTS.translationPositionTolerance, self._constants.TARGET_ALIGNMENT_CONSTANTS.translationVelocityTolerance)
     self._targetAlignmentRotationController = ProfiledPIDController(
       *self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationPID, 
       TrapezoidProfile.Constraints(self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationMaxVelocity, self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationMaxAcceleration)
     )
-    self._targetAlignmentRotationController.setTolerance(*self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationTolerance)
+    self._targetAlignmentRotationController.setTolerance(self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationPositionTolerance, self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationVelocityTolerance)
     self._targetAlignmentRotationController.enableContinuousInput(-180.0, 180.0)
 
     self._speedMode: SpeedMode = SpeedMode.Competition
@@ -198,18 +198,20 @@ class Drive(Subsystem):
     )
 
   def _runTargetAlignment(self, robotPose: Pose2d, targetAlignmentMode: TargetAlignmentMode) -> None:
-    speedTranslationX = 0
-    speedTranslationY = 0
-    speedRotation = 0
-    if not self._targetAlignmentRotationController.atGoal():
-      speedRotation = self._targetAlignmentRotationController.calculate(robotPose.rotation().degrees())
-    if targetAlignmentMode == TargetAlignmentMode.Translation:
-      targetTranslation = self._targetAlignmentPose.toPose2d() - robotPose
-      if not self._targetAlignmentTranslationXController.atGoal() or not self._targetAlignmentTranslationYController.atGoal():
-        speedTranslationX = -self._targetAlignmentTranslationXController.calculate(targetTranslation.X())
-        speedTranslationY = -self._targetAlignmentTranslationYController.calculate(targetTranslation.Y())
-    self._setModuleStates(ChassisSpeeds(speedTranslationX, speedTranslationY, units.degreesToRadians(speedRotation)))
-    if speedRotation == 0 and speedTranslationX == 0 and speedTranslationY == 0:
+    if (
+      not self._targetAlignmentTranslationXController.atGoal() or
+      not self._targetAlignmentTranslationYController.atGoal() or
+      not self._targetAlignmentRotationController.atGoal()
+    ):
+      targetTranslation = self._targetAlignmentPose.toPose2d() - robotPose if targetAlignmentMode == TargetAlignmentMode.Translation else Transform2d()
+      self._setModuleStates(
+        ChassisSpeeds(
+          -self._targetAlignmentTranslationXController.calculate(targetTranslation.X()), 
+          -self._targetAlignmentTranslationYController.calculate(targetTranslation.Y()), 
+          units.degreesToRadians(self._targetAlignmentRotationController.calculate(robotPose.rotation().degrees()))
+        )
+      )
+    else:
       self._targetAlignmentState = State.Completed
 
   def _endTargetAlignment(self) -> None:
