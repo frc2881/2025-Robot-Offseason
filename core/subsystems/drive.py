@@ -204,13 +204,22 @@ class Drive(Subsystem):
       not self._targetAlignmentRotationController.atGoal()
     ):
       targetTranslation = self._targetAlignmentPose.toPose2d() - robotPose if targetAlignmentMode == TargetAlignmentMode.Translation else Transform2d()
-      self._setModuleStates(
-        ChassisSpeeds(
-          -self._targetAlignmentTranslationXController.calculate(targetTranslation.X()), 
-          -self._targetAlignmentTranslationYController.calculate(targetTranslation.Y()), 
-          units.degreesToRadians(self._targetAlignmentRotationController.calculate(robotPose.rotation().degrees()))
-        )
+      vx = utils.clampValue(
+        self._targetAlignmentTranslationXController.calculate(targetTranslation.X()),
+        -self._constants.TARGET_ALIGNMENT_CONSTANTS.translationMaxVelocity,
+        self._constants.TARGET_ALIGNMENT_CONSTANTS.translationMaxVelocity
       )
+      vy = utils.clampValue(
+        self._targetAlignmentTranslationXController.calculate(targetTranslation.Y()),
+        -self._constants.TARGET_ALIGNMENT_CONSTANTS.translationMaxVelocity,
+        self._constants.TARGET_ALIGNMENT_CONSTANTS.translationMaxVelocity
+      )
+      omega = utils.clampValue(
+        units.degreesToRadians(self._targetAlignmentRotationController.calculate(robotPose.rotation().degrees())),
+        -self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationMaxVelocity,
+        self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationMaxVelocity
+      )
+      self._setModuleStates(ChassisSpeeds(-vx, -vy, omega))
     else:
       self._targetAlignmentState = State.Completed
 
