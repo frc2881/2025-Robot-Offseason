@@ -210,16 +210,16 @@ class Drive(Subsystem):
         self._constants.TARGET_ALIGNMENT_CONSTANTS.translationMaxVelocity
       )
       vy = utils.clampValue(
-        self._targetAlignmentTranslationXController.calculate(targetTranslation.Y()),
+        self._targetAlignmentTranslationYController.calculate(targetTranslation.Y()),
         -self._constants.TARGET_ALIGNMENT_CONSTANTS.translationMaxVelocity,
         self._constants.TARGET_ALIGNMENT_CONSTANTS.translationMaxVelocity
       )
-      omega = utils.clampValue(
-        units.degreesToRadians(self._targetAlignmentRotationController.calculate(robotPose.rotation().degrees())),
+      vt = utils.clampValue(
+        self._targetAlignmentRotationController.calculate(robotPose.rotation().degrees()),
         -self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationMaxVelocity,
         self._constants.TARGET_ALIGNMENT_CONSTANTS.rotationMaxVelocity
       )
-      self._setModuleStates(ChassisSpeeds(-vx, -vy, omega))
+      self._setModuleStates(ChassisSpeeds(-vx, -vy, units.degreesToRadians(vt)))
     else:
       self._targetAlignmentState = State.Completed
 

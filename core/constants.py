@@ -90,12 +90,12 @@ class Subsystems:
       translationMaxVelocity = 1.6,
       translationMaxAcceleration = 0.8,
       translationPositionTolerance = 0.025,
-      translationVelocityTolerance = 0.0,
+      translationVelocityTolerance = 0.1,
       rotationPID = PID(5.0, 0, 0),
       rotationMaxVelocity = 540.0,
       rotationMaxAcceleration = 360.0,
       rotationPositionTolerance = 0.5,
-      rotationVelocityTolerance = 0.0,
+      rotationVelocityTolerance = 45.0,
       rotationHeadingModeOffset = 0,
       rotationTranslationModeOffset = 180.0
     )
